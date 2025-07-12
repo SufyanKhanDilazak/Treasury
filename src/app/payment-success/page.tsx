@@ -10,7 +10,7 @@ export default function PaymentSuccessPage() {
         <CardHeader className="text-center">
           <CheckCircle className="mx-auto mb-4 w-12 h-12 text-green-600 dark:text-green-400" />
           <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
-            Payment Successful!
+            Order Confirmed!
           </CardTitle>
           <p className="text-gray-600 dark:text-gray-300">
             Your order is confirmed and being processed.

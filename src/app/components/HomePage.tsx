@@ -4,8 +4,16 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState, useCallback, memo, useMemo } from 'react'
 import { motion, AnimatePresence, type Variants } from 'framer-motion'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import { getHomepageProducts } from '../../sanity/lib/actions'
 import type { GroupedProducts, Product } from '@/sanity/lib/data'
+import WhatsAppFloatingIcon from './WhatsaAppFloatingIcon' // Add this line
 
 // Category configuration with predefined banners
 const CATEGORY_CONFIG = {
@@ -326,27 +334,49 @@ const ProductSkeleton = memo<{ isMobile?: boolean }>(({ isMobile = false }) => {
 
 ProductSkeleton.displayName = 'ProductSkeleton'
 
-// Mobile Carousel Component
+// Mobile Carousel Component with debugging
 const MobileCarousel = memo<{ products: Product[]; categoryKey: string }>(({ products, categoryKey }) => {
   const displayProducts = useMemo(() => products.slice(0, 8), [products])
-
+  
   return (
-    <div className="w-full overflow-hidden">
-      <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 px-4">
-        {displayProducts.length > 0 ? (
-          displayProducts.map((product, index) => (
-            <ProductCard key={product._id} product={product} index={index} isMobile={true} />
-          ))
-        ) : (
-          Array.from({ length: 4 }, (_, i) => (
-            <ProductSkeleton key={`skeleton-${categoryKey}-${i}`} isMobile={true} />
-          ))
-        )}
-      </div>
+    <div className="w-full px-4 relative">
+      <Carousel
+        opts={{
+          align: "start",
+          loop: false,
+          skipSnaps: false,
+          dragFree: false,
+          containScroll: "trimSnaps",
+        }}
+        className="w-full max-w-full"
+      >
+        <CarouselContent className="flex gap-4 ml-0">
+          {displayProducts.length > 0 ? (
+            displayProducts.map((product, index) => (
+              <CarouselItem key={product._id} className="basis-[200px] flex-shrink-0 min-w-0 snap-start">
+                <ProductCard product={product} index={index} isMobile={true} />
+              </CarouselItem>
+            ))
+          ) : (
+            Array.from({ length: 4 }, (_, i) => (
+              <CarouselItem key={`skeleton-${categoryKey}-${i}`} className="basis-[200px] flex-shrink-0 min-w-0 snap-start">
+                <ProductSkeleton isMobile={true} />
+              </CarouselItem>
+            ))
+          )}
+        </CarouselContent>
+                
+        {/* Force buttons to be visible and centered higher */}
+        <CarouselPrevious 
+          className="absolute left-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-black text-white hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
+        />
+        <CarouselNext 
+          className="absolute right-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-black text-white hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
+        />
+      </Carousel>
     </div>
   )
 })
-
 MobileCarousel.displayName = 'MobileCarousel'
 
 // Category Banner Component
@@ -663,7 +693,7 @@ export default function HomePage() {
           </motion.p>
         </motion.div>
       </div>
-
+      <WhatsAppFloatingIcon />
       <style jsx>{`
         .scrollbar-hide {
           -ms-overflow-style: none;
