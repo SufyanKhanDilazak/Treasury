@@ -353,7 +353,7 @@ const MobileCarousel = memo<{ products: Product[]; categoryKey: string }>(({ pro
         <CarouselContent className="flex gap-0 ml-0">
           {displayProducts.length > 0 ? (
             displayProducts.map((product, index) => (
-              <CarouselItem key={product._id} className="basis-[190px] flex-shrink-0 min-w-0 snap-start">
+              <CarouselItem key={product._id} className="basis-[175px] flex-shrink-0 min-w-0 snap-start">
                 <ProductCard product={product} index={index} isMobile={true} />
               </CarouselItem>
             ))
