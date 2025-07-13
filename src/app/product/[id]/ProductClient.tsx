@@ -244,7 +244,7 @@ const RelatedProductCard = ({ relatedProduct, index }: { relatedProduct: Related
 
 export default function ProductClient({ product, relatedProducts }: Props) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [selectedVolume, setSelectedVolume] = useState<string>("");
+  const [selectedVolume, setSelectedVolume] = useState<string>(product.volume?.[0] || "");
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -594,30 +594,6 @@ export default function ProductClient({ product, relatedProducts }: Props) {
                   Buy Now
                 </div>
               </Button>
-            </div>
-            <div className="border-[0.5px] border-[#A64D9D] rounded-lg p-4 space-y-3 bg-black/30">
-              <h3 className="text-lg font-semibold text-white">Why Choose Us?</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { icon: Truck, title: "Free Shipping", desc: "On orders over PKR 2000" },
-                  { icon: RotateCcw, title: "Easy Returns", desc: "30 day policy" },
-                  { icon: Shield, title: "Secure Payment", desc: "Data protected" },
-                  { icon: Headphones, title: "24/7 Support", desc: "Always available" },
-                ].map(({ icon: Icon, title, desc }) => (
-                  <div
-                    key={title}
-                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#A64D9D]/10 transition-colors"
-                  >
-                    <div className="p-2 rounded-lg bg-[#A64D9D]/20">
-                      <Icon className="h-4 w-4 text-[#A64D9D]" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-white text-sm">{title}</p>
-                      <p className="text-xs text-white/80">{desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
