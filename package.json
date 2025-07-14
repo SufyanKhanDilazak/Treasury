@@ -18,6 +18,8 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@react-three/drei": "^10.5.0",
+    "@react-three/fiber": "^9.2.0",
     "@sanity/image-url": "^1.1.0",
     "@sanity/vision": "^3.95.0",
     "@supabase/supabase-js": "^2.50.2",
@@ -31,13 +33,15 @@
     "nodemailer": "^7.0.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-intersection-observer": "^9.16.0",
     "sanity": "^3.95.0",
     "shadcn-ui": "^0.9.5",
     "sonner": "^2.0.5",
     "styled-components": "^6.1.19",
     "swr": "^2.3.3",
     "tailwind-config": "^0.1.2",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "three": "^0.178.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
