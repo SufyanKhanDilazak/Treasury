@@ -183,7 +183,7 @@ export default function SplineBackground({
     <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-        <p className="text-white text-sm">Loading 3D scene...</p>
+        <p className="text-white text-sm">Loading scene...</p>
       </div>
     </div>
   );
