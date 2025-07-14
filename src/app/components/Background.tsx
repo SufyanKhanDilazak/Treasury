@@ -280,7 +280,7 @@ export default function SplineBackground({
         )}
         
         {/* Spline viewer */}
-        {isScriptLoaded && React.createElement('spline-viewer' as any, {
+        {isScriptLoaded && React.createElement('spline-viewer', {
           url: 'https://prod.spline.design/Hqt1GHiVof6egfHt/scene.splinecode',
           className: 'w-full h-full block',
           loading: 'lazy',
