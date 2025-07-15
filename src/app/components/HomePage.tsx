@@ -141,7 +141,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
     : 0
 
   const cardClasses = useMemo(() => 
-    `group ${isMobile ? 'w-[160px] flex-shrink-0  ' : ''}`
+    `group ${isMobile ? 'w-[120px] flex-shrink-0  ' : ''}`
   , [isMobile])
 
   return (
@@ -298,7 +298,7 @@ ProductCard.displayName = 'ProductCard'
 // Product Skeleton Component
 const ProductSkeleton = memo<{ isMobile?: boolean }>(({ isMobile = false }) => {
   const skeletonClasses = useMemo(() => 
-    `group ${isMobile ? 'w-[160px] flex-shrink-0' : ''}`
+    `group ${isMobile ? 'w-[120px] flex-shrink-0' : ''}`
   , [isMobile])
 
   return (
@@ -353,7 +353,7 @@ const MobileCarousel = memo<{ products: Product[]; categoryKey: string }>(({ pro
         <CarouselContent className="flex gap-0 ml-0">
           {displayProducts.length > 0 ? (
             displayProducts.map((product, index) => (
-              <CarouselItem key={product._id} className="basis-[175px] flex-shrink-0 min-w-0 snap-start">
+              <CarouselItem key={product._id} className="basis-[155px] flex-shrink-0 min-w-0 snap-start">
                 <ProductCard product={product} index={index} isMobile={true} />
               </CarouselItem>
             ))
