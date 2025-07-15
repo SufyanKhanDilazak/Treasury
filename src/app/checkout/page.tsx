@@ -47,8 +47,7 @@ export default function CheckoutPage() {
         itemsToProcess = [buyNowItem];
         const itemSubtotal = buyNowItem.price * buyNowItem.quantity;
         const itemShipping = itemSubtotal > 10000 ? 0 : 500;
-        const itemTax = itemSubtotal * 0.13;
-        totalToProcess = itemSubtotal + itemShipping + itemTax;
+        totalToProcess = itemSubtotal + itemShipping;
       } else {
         router.push("/categories/all_product");
         return;
@@ -136,21 +135,7 @@ export default function CheckoutPage() {
                       <Truck className="h-4 w-4" />
                       Shipping
                     </span>
-                    <span
-                      className={
-                        checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0) > 10000
-                          ? "text-green-400"
-                          : ""
-                      }
-                    >
-                      {checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0) > 10000 ? "Free" : "PKR 500.00"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-gray-300">
-                    <span>Tax (13%)</span>
-                    <span>
-                      PKR {(checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0) * 0.13).toFixed(2)}
-                    </span>
+                    <span>PKR 500.00</span>
                   </div>
                   <Separator className="my-3 bg-[#A64D9D]" />
                   <div className="flex justify-between text-lg font-bold text-white">
@@ -158,14 +143,6 @@ export default function CheckoutPage() {
                     <span className="text-[#A64D9D]">PKR {checkoutTotal.toFixed(2)}</span>
                   </div>
                 </div>
-                {checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0) < 10000 && (
-                  <div className="mt-4 p-3 bg-[#A64D9D]/10 border border-[#A64D9D] rounded-lg">
-                    <p className="text-sm text-[#A64D9D]">
-                      Add PKR {(3000 - checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0)).toFixed(2)}{" "}
-                      more for free shipping!
-                    </p>
-                  </div>
-                )}
                 
                 {/* WhatsApp Help Button */}
                 <div className="mt-4 pt-4 border-t border-[#A64D9D]/30">
@@ -303,12 +280,10 @@ function OrderForm({
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ 
     name: "", 
-    email: "", 
-    phone: "", 
+    contact: "", 
     address: "", 
     city: "", 
-    state: "", 
-    zip: "" 
+    state: ""
   });
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -317,17 +292,24 @@ function OrderForm({
     if (validationErrors[field]) setValidationErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
+  const isEmail = (contact: string) => {
+    return /\S+@\S+\.\S+/.test(contact);
+  };
+
   const validateForm = () => {
     const errors: Record<string, string> = {};
     if (!formData.name.trim()) errors.name = "Full name is required";
-    if (!formData.email.trim()) errors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Invalid email address";
-    if (!formData.phone.trim()) errors.phone = "Phone number is required";
+    
+    if (!formData.contact.trim()) {
+      errors.contact = "Email or phone number is required";
+    } else if (formData.contact.includes("@") && !isEmail(formData.contact)) {
+      errors.contact = "Invalid email address";
+    }
+    
     if (!formData.address.trim()) errors.address = "Address is required";
     if (!formData.city.trim()) errors.city = "City is required";
     if (!formData.state.trim()) errors.state = "State is required";
-    if (!formData.zip.trim()) errors.zip = "ZIP code is required";
-    else if (!/^\d{5}(-\d{4})?$/.test(formData.zip)) errors.zip = "Invalid ZIP code";
+    
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -345,18 +327,16 @@ function OrderForm({
 
     try {
       const itemsSubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      const itemsShipping = itemsSubtotal > 10000 ? 0 : 500;
-      const itemsTax = itemsSubtotal * 0.13;
-      const itemsTotal = itemsSubtotal + itemsShipping + itemsTax;
+      const itemsShipping = 500;
+      const itemsTotal = itemsSubtotal + itemsShipping;
 
       const orderData = {
-        email: formData.email,
+        email: isEmail(formData.contact) ? formData.contact : null,
+        phone: !isEmail(formData.contact) ? formData.contact : null,
         name: formData.name,
-        phone: formData.phone,
         address: formData.address,
         city: formData.city,
         state: formData.state,
-        zip: formData.zip,
         items: items.map((item) => ({
           id: item._id,
           name: item.name,
@@ -367,7 +347,6 @@ function OrderForm({
           imageUrl: item.imageUrl,
         })),
         subtotal: itemsSubtotal,
-        tax: itemsTax,
         shipping: itemsShipping,
         total: itemsTotal,
       };
@@ -412,7 +391,7 @@ function OrderForm({
             <User className="h-5 w-5 text-[#A64D9D]" />
             Contact Information
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-4">
             <FormField
               label="Full Name"
               icon={User}
@@ -424,27 +403,19 @@ function OrderForm({
               error={validationErrors.name}
             />
             <FormField
-              label="Phone Number"
-              icon={Phone}
-              id="phone"
-              type="tel"
-              placeholder="+92-1234567890"
-              value={formData.phone}
-              onChange={(e) => handleInputChange("phone", e.target.value)}
-              error={validationErrors.phone}
+              label="Email or Phone Number"
+              icon={Mail}
+              id="contact"
+              type="text"
+              placeholder="john@example.com or +92-1234567890"
+              value={formData.contact}
+              onChange={(e) => handleInputChange("contact", e.target.value)}
+              error={validationErrors.contact}
             />
+            <p className="text-sm text-gray-400">
+              Please provide either your email address or phone number for order updates.
+            </p>
           </div>
-          <FormField
-            label="Email Address"
-            icon={Mail}
-            id="email"
-            type="email"
-            placeholder="john@example.com"
-            value={formData.email}
-            onChange={(e) => handleInputChange("email", e.target.value)}
-            error={validationErrors.email}
-            className="mt-4"
-          />
         </div>
 
         <div className="bg-black border-[0.5px] border-[#A64D9D] p-4 sm:p-6 rounded-xl shadow-xl">
@@ -463,7 +434,7 @@ function OrderForm({
               onChange={(e) => handleInputChange("address", e.target.value)}
               error={validationErrors.address}
             />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 label="City"
                 icon={MapPin}
@@ -483,16 +454,6 @@ function OrderForm({
                 value={formData.state}
                 onChange={(e) => handleInputChange("state", e.target.value)}
                 error={validationErrors.state}
-              />
-              <FormField
-                label="ZIP Code"
-                icon={MapPin}
-                id="zip"
-                type="text"
-                placeholder="10001"
-                value={formData.zip}
-                onChange={(e) => handleInputChange("zip", e.target.value)}
-                error={validationErrors.zip}
               />
             </div>
           </div>

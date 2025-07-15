@@ -155,7 +155,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
     >
       <Link href={`/product/${product._id}`} className="block">
         <motion.div 
-          className="relative w-full aspect-[8/10] overflow-hidden bg-black border-[0.5px] border-[#A64D9D] rounded-xl shadow-lg"
+          className="relative w-full aspect-[8/10] overflow-hidden bg-black/80 border-[0.5px] border-[#A64D9D] rounded-xl shadow-lg backdrop-blur-sm"
           whileHover={{ 
             borderColor: "#D946EF",
             boxShadow: "0 8px 25px rgba(166, 77, 157, 0.3)"
@@ -165,13 +165,13 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
           <AnimatePresence>
             {imageLoading && (
               <motion.div 
-                className="absolute inset-0 bg-gray-800 rounded-xl"
+                className="absolute inset-0 bg-gray-800/80 rounded-xl backdrop-blur-sm"
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
                 <motion.div 
-                  className="w-full h-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-xl"
+                  className="w-full h-full bg-gradient-to-r from-gray-800/80 via-gray-700/80 to-gray-800/80 rounded-xl"
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
                 />
@@ -198,7 +198,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
               />
             </motion.div>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm font-light bg-black rounded-xl">
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm font-light bg-black/80 rounded-xl backdrop-blur-sm">
               No Image Available
             </div>
           )}
@@ -249,7 +249,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
           transition={{ delay: 0.1, duration: 0.3 }}
         >
           <motion.div 
-            className="border-[0.5px] border-[#A64D9D] bg-black px-3 py-2.5 text-center transition-all duration-300 shadow-lg rounded-lg"
+            className="border-[0.5px] border-[#A64D9D] bg-black/80 backdrop-blur-sm px-3 py-2.5 text-center transition-all duration-300 shadow-lg rounded-lg"
             whileHover={{ 
               borderColor: "#D946EF",
               boxShadow: "0 4px 12px rgba(166, 77, 157, 0.2)"
@@ -264,28 +264,28 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
             </motion.h4>
             
             <motion.div 
-  className="flex items-center justify-center space-x-2"
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ delay: 0.2 }}
->
-  <motion.span 
-    className="text-base font-semibold text-[#A64D9D]"
-    whileHover={{ scale: 1.03, color: "#D946EF" }}
-  >
-    PKR {displayPrice.toFixed(2)}
-  </motion.span>
-  {originalPrice && (
-    <motion.span 
-      className="text-sm text-gray-400 line-through"
-      initial={{ opacity: 0, x: 5 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.3 }}
-    >
-      PKR {originalPrice.toFixed(2)}
-    </motion.span>
-  )}
-</motion.div>
+              className="flex items-center justify-center space-x-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <motion.span 
+                className="text-base font-semibold text-[#A64D9D]"
+                whileHover={{ scale: 1.03, color: "#D946EF" }}
+              >
+                PKR {displayPrice.toFixed(2)}
+              </motion.span>
+              {originalPrice && (
+                <motion.span 
+                  className="text-sm text-gray-400 line-through"
+                  initial={{ opacity: 0, x: 5 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  PKR {originalPrice.toFixed(2)}
+                </motion.span>
+              )}
+            </motion.div>
           </motion.div>
         </motion.div>
       </Link>
@@ -306,16 +306,16 @@ const ProductSkeleton = memo<{ isMobile?: boolean }>(({ isMobile = false }) => {
       className={skeletonClasses}
       variants={cardVariants}
     >
-      <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-800 border-[0.5px] border-gray-600 rounded-xl">
+      <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-800/80 border-[0.5px] border-gray-600 rounded-xl backdrop-blur-sm">
         <motion.div 
-          className="w-full h-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-xl"
+          className="w-full h-full bg-gradient-to-r from-gray-800/80 via-gray-700/80 to-gray-800/80 rounded-xl"
           animate={{ x: ['-100%', '100%'] }}
           transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
         />
       </div>
       
       <div className="mt-3">
-        <div className="border-[0.5px] border-gray-600 bg-black px-3 py-2.5 text-center rounded-lg">
+        <div className="border-[0.5px] border-gray-600 bg-black/80 backdrop-blur-sm px-3 py-2.5 text-center rounded-lg">
           <motion.div 
             className="h-3 bg-gray-700 mb-1.5 rounded"
             animate={{ opacity: [0.5, 1, 0.5] }}
@@ -368,10 +368,10 @@ const MobileCarousel = memo<{ products: Product[]; categoryKey: string }>(({ pro
                 
         {/* Force buttons to be visible and centered higher */}
         <CarouselPrevious 
-          className="absolute left-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-black text-white hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
+          className="absolute left-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-black/80 backdrop-blur-sm text-white hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
         />
         <CarouselNext 
-          className="absolute right-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-black text-white hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
+          className="absolute right-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-black/80 backdrop-blur-sm text-white hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
         />
       </Carousel>
     </div>
@@ -410,7 +410,7 @@ function CategoryBanner({ categoryKey, config, products }: {
         transition={{ type: "spring" as const, stiffness: 400, damping: 40 }}
       >
         <motion.div 
-          className="relative h-28 md:h-40 overflow-hidden border-[0.5px] border-[#A64D9D] shadow-xl rounded-xl backdrop-blur-sm bg-black"
+          className="relative h-28 md:h-40 overflow-hidden border-[0.5px] border-[#A64D9D] shadow-xl rounded-xl backdrop-blur-sm bg-black/80"
           whileHover={{ 
             borderColor: "#D946EF",
             boxShadow: "0 12px 35px rgba(166, 77, 157, 0.3)"
@@ -447,7 +447,7 @@ function CategoryBanner({ categoryKey, config, products }: {
             
             <Link href={config.route}>
               <motion.button
-                className="bg-black bg-opacity-70 hover:bg-[#A64D9D] text-white px-4 py-1.5 text-xs font-medium border-[0.5px] border-[#A64D9D] hover:border-[#D946EF] transition-all duration-300 rounded-lg"
+                className="bg-black/70 hover:bg-[#A64D9D] text-white px-4 py-1.5 text-xs font-medium border-[0.5px] border-[#A64D9D] hover:border-[#D946EF] transition-all duration-300 rounded-lg backdrop-blur-sm"
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
@@ -467,7 +467,7 @@ function CategoryBanner({ categoryKey, config, products }: {
           <MobileCarousel products={products} categoryKey={categoryKey} />
         ) : (
           <motion.div 
-            className="border-[0.5px] border-[#A64D9D] bg-black p-4 md:p-6 shadow-xl rounded-xl"
+            className="border-[0.5px] border-[#A64D9D] bg-black/80 backdrop-blur-sm p-4 md:p-6 shadow-xl rounded-xl"
             whileHover={{ 
               borderColor: "#D946EF",
               boxShadow: "0 15px 40px rgba(166, 77, 157, 0.2)"
@@ -506,7 +506,7 @@ function CategoryBanner({ categoryKey, config, products }: {
                 transition={{ delay: 0.3 }}
               >
                 <motion.div 
-                  className="bg-gray-900/80 border-[0.5px] border-gray-600 p-6 md:p-8 rounded-lg"
+                  className="bg-gray-900/80 border-[0.5px] border-gray-600 backdrop-blur-sm p-6 md:p-8 rounded-lg"
                   whileHover={{ 
                     borderColor: "#A64D9D",
                     backgroundColor: "rgba(166, 77, 157, 0.1)"
@@ -576,44 +576,73 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <motion.div 
-        className="min-h-screen bg-[#222222] flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
+      <div className="min-h-screen relative">
+        {/* Background Image */}
+        <div className="fixed inset-0 w-full h-full z-0">
+          <Image
+            src="/bg.jpg"
+            alt="Background"
+            fill
+            className="object-cover"
+            quality={85}
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+
         <motion.div 
-          className="text-center border-[0.5px] border-red-500 bg-black p-8 rounded-xl"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring" as const, stiffness: 100, damping: 15 }}
+          className="relative z-10 min-h-screen flex items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
         >
-          <motion.p 
-            className="text-red-400 mb-6 text-lg font-medium"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.1 }}
+          <motion.div 
+            className="text-center border-[0.5px] border-red-500 bg-black/80 backdrop-blur-sm p-8 rounded-xl"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring" as const, stiffness: 100, damping: 15 }}
           >
-            {error}
-          </motion.p>
-          <motion.button
-            onClick={fetchProducts}
-            className="px-6 py-2 border-[0.5px] border-[#A64D9D] text-[#A64D9D] hover:bg-[#A64D9D] hover:text-white transition-all font-medium rounded-lg"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            Try Again
-          </motion.button>
+            <motion.p 
+              className="text-red-400 mb-6 text-lg font-medium"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              {error}
+            </motion.p>
+            <motion.button
+              onClick={fetchProducts}
+              className="px-6 py-2 border-[0.5px] border-[#A64D9D] text-[#A64D9D] hover:bg-[#A64D9D] hover:text-white transition-all font-medium rounded-lg backdrop-blur-sm"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              Try Again
+            </motion.button>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#222222]">
-      <div className="w-full px-0 py-8 md:py-12">
+    <div className="min-h-screen relative">
+      {/* Background Image */}
+      <div className="fixed inset-0 w-full h-full z-0">
+        <Image
+          src="/bg.jpg"
+          alt="Background"
+          fill
+          className="object-cover"
+          quality={85}
+          priority
+        />
+        <div className="absolute inset-0 bg-black/50" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 w-full px-0 py-8 md:py-12">
         {/* Header */}
         <motion.div 
           className="text-center mb-12 px-4"
@@ -622,7 +651,7 @@ export default function HomePage() {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <motion.h1 
-            className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-4 bg-gradient-to-r from-white to-[#A64D9D] bg-clip-text text-transparent"
+            className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-4 bg-gradient-to-r from-white to-[#A64D9D] bg-clip-text text-transparent drop-shadow-lg"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.6, type: "spring" as const, stiffness: 120 }}
@@ -630,7 +659,7 @@ export default function HomePage() {
             Fragrance Collection
           </motion.h1>
           <motion.p 
-            className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto font-light leading-relaxed"
+            className="text-base md:text-lg text-gray-100 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
@@ -679,7 +708,7 @@ export default function HomePage() {
           transition={{ duration: 0.6, delay: 0.8 }}
         >
           <motion.p 
-            className="text-gray-400 font-light"
+            className="text-gray-300 font-light drop-shadow-sm"
             whileHover={{ color: "#A64D9D" }}
             transition={{ duration: 0.3 }}
           >
@@ -693,7 +722,9 @@ export default function HomePage() {
           </motion.p>
         </motion.div>
       </div>
+      
       <WhatsAppFloatingIcon />
+      
       <style jsx>{`
         .scrollbar-hide {
           -ms-overflow-style: none;
