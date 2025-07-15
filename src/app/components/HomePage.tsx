@@ -141,7 +141,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
     : 0
 
   const cardClasses = useMemo(() => 
-    `group ${isMobile ? 'w-[130px] flex-shrink-0  ' : ''}`
+    `group ${isMobile ? 'w-[140px] flex-shrink-0  ' : ''}`
   , [isMobile])
 
   return (
@@ -298,7 +298,7 @@ ProductCard.displayName = 'ProductCard'
 // Product Skeleton Component
 const ProductSkeleton = memo<{ isMobile?: boolean }>(({ isMobile = false }) => {
   const skeletonClasses = useMemo(() => 
-    `group ${isMobile ? 'w-[130px] flex-shrink-0' : ''}`
+    `group ${isMobile ? 'w-[140px] flex-shrink-0' : ''}`
   , [isMobile])
 
   return (
