@@ -12,18 +12,16 @@ export async function POST(req: NextRequest) {
       .from("orders")
       .insert({
         order_number: orderNumber,
-        customer_email: orderData.email,
-        customer_name: orderData.name,
         customer_phone: orderData.phone,
+        customer_name: orderData.name,
         shipping_address: {
           address: orderData.address,
           city: orderData.city,
           state: orderData.state,
-          zip: orderData.zip,
         },
         items: orderData.items,
         subtotal: orderData.subtotal,
-        tax: orderData.tax,
+        tax: 0,
         shipping: orderData.shipping,
         total: orderData.total,
         status: "pending",
@@ -34,22 +32,20 @@ export async function POST(req: NextRequest) {
 
     if (orderError) throw orderError
 
-    // Send email notification
+    // Send order notification
     if (newOrder) {
       await sendOrderNotification(newOrder)
     }
 
+    // Update customer record using phone as key
     await supabaseAdmin
       .from("customers")
       .upsert(
         {
-          email: orderData.email,
-          name: orderData.name,
           phone: orderData.phone,
-          total_orders: orderData.total_orders || 1,
-          total_spent: orderData.total_spent || orderData.total,
+          name: orderData.name,
         },
-        { onConflict: "email" }
+        { onConflict: "phone" }
       )
 
     // Revalidate the orders dashboard page

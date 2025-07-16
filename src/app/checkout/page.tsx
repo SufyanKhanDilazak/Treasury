@@ -17,7 +17,6 @@ import {
   Package,
   MapPin,
   User,
-  Mail,
   Phone,
   Minus,
   Plus,
@@ -280,7 +279,7 @@ function OrderForm({
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ 
     name: "", 
-    contact: "", 
+    phone: "", 
     address: "", 
     city: "", 
     state: ""
@@ -292,23 +291,36 @@ function OrderForm({
     if (validationErrors[field]) setValidationErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const isEmail = (contact: string) => {
-    return /\S+@\S+\.\S+/.test(contact);
+  const isValidPhoneNumber = (phone: string) => {
+    // Basic phone number validation - you can make this more strict
+    const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+    return phoneRegex.test(phone.trim());
   };
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    if (!formData.name.trim()) errors.name = "Full name is required";
     
-    if (!formData.contact.trim()) {
-      errors.contact = "Email or phone number is required";
-    } else if (formData.contact.includes("@") && !isEmail(formData.contact)) {
-      errors.contact = "Invalid email address";
+    if (!formData.name.trim()) {
+      errors.name = "Full name is required";
     }
     
-    if (!formData.address.trim()) errors.address = "Address is required";
-    if (!formData.city.trim()) errors.city = "City is required";
-    if (!formData.state.trim()) errors.state = "State is required";
+    if (!formData.phone.trim()) {
+      errors.phone = "Phone number is required";
+    } else if (!isValidPhoneNumber(formData.phone)) {
+      errors.phone = "Please enter a valid phone number";
+    }
+    
+    if (!formData.address.trim()) {
+      errors.address = "Address is required";
+    }
+    
+    if (!formData.city.trim()) {
+      errors.city = "City is required";
+    }
+    
+    if (!formData.state.trim()) {
+      errors.state = "State is required";
+    }
     
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -331,12 +343,11 @@ function OrderForm({
       const itemsTotal = itemsSubtotal + itemsShipping;
 
       const orderData = {
-        email: isEmail(formData.contact) ? formData.contact : null,
-        phone: !isEmail(formData.contact) ? formData.contact : null,
-        name: formData.name,
-        address: formData.address,
-        city: formData.city,
-        state: formData.state,
+        phone: formData.phone.trim(),
+        name: formData.name.trim(),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        state: formData.state.trim(),
         items: items.map((item) => ({
           id: item._id,
           name: item.name,
@@ -403,17 +414,17 @@ function OrderForm({
               error={validationErrors.name}
             />
             <FormField
-              label="Email or Phone Number"
-              icon={Mail}
-              id="contact"
-              type="text"
-              placeholder="john@example.com or +92-1234567890"
-              value={formData.contact}
-              onChange={(e) => handleInputChange("contact", e.target.value)}
-              error={validationErrors.contact}
+              label="Phone Number"
+              icon={Phone}
+              id="phone"
+              type="tel"
+              placeholder="+92-1234567890"
+              value={formData.phone}
+              onChange={(e) => handleInputChange("phone", e.target.value)}
+              error={validationErrors.phone}
             />
             <p className="text-sm text-gray-400">
-              Please provide either your email address or phone number for order updates.
+              Please provide your phone number for order updates and delivery coordination.
             </p>
           </div>
         </div>

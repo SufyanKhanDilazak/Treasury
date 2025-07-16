@@ -8,9 +8,8 @@ DROP TABLE IF EXISTS customers CASCADE;
 -- Create customers table first (referenced by orders)
 CREATE TABLE customers (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
+  phone VARCHAR(50) UNIQUE NOT NULL,
   name VARCHAR(255) NOT NULL,
-  phone VARCHAR(50),
   clerk_user_id VARCHAR(255),
   total_orders INTEGER DEFAULT 0,
   total_spent DECIMAL(10,2) DEFAULT 0.00,
@@ -22,9 +21,8 @@ CREATE TABLE customers (
 CREATE TABLE orders (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   order_number VARCHAR(50) UNIQUE NOT NULL,
-  customer_email VARCHAR(255) NOT NULL,
+  customer_phone VARCHAR(50) NOT NULL,
   customer_name VARCHAR(255) NOT NULL,
-  customer_phone VARCHAR(50),
   shipping_address JSONB NOT NULL DEFAULT '{}',
   billing_address JSONB DEFAULT '{}',
   items JSONB NOT NULL DEFAULT '[]',
@@ -40,12 +38,12 @@ CREATE TABLE orders (
 );
 
 -- Create indexes for better performance
-CREATE INDEX idx_orders_customer_email ON orders(customer_email);
+CREATE INDEX idx_orders_customer_phone ON orders(customer_phone);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_payment_status ON orders(payment_status);
 CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
 CREATE INDEX idx_orders_order_number ON orders(order_number);
-CREATE INDEX idx_customers_email ON customers(email);
+CREATE INDEX idx_customers_phone ON customers(phone);
 CREATE INDEX idx_customers_created_at ON customers(created_at DESC);
 
 -- Create function to update updated_at timestamp
@@ -78,16 +76,16 @@ BEGIN
         total_orders = (
             SELECT COUNT(*) 
             FROM orders 
-            WHERE customer_email = customers.email 
+            WHERE customer_phone = customers.phone 
             AND payment_status = 'paid'
         ),
         total_spent = (
             SELECT COALESCE(SUM(total), 0) 
             FROM orders 
-            WHERE customer_email = customers.email 
+            WHERE customer_phone = customers.phone 
             AND payment_status = 'paid'
         )
-    WHERE email = COALESCE(NEW.customer_email, OLD.customer_email);
+    WHERE phone = COALESCE(NEW.customer_phone, OLD.customer_phone);
     
     RETURN COALESCE(NEW, OLD);
 END;
@@ -100,17 +98,16 @@ CREATE TRIGGER update_customer_stats_trigger
     EXECUTE FUNCTION update_customer_stats();
 
 -- Insert some sample data for testing (optional)
-INSERT INTO customers (email, name, phone) VALUES 
-('test@example.com', 'Test Customer', '+1234567890'),
-('demo@example.com', 'Demo User', '+0987654321')
-ON CONFLICT (email) DO NOTHING;
+INSERT INTO customers (phone, name) VALUES 
+('+1234567890', 'Test Customer'),
+('+0987654321', 'Demo User')
+ON CONFLICT (phone) DO NOTHING;
 
 -- Insert sample orders for testing (optional)
 INSERT INTO orders (
     order_number, 
-    customer_email, 
+    customer_phone, 
     customer_name, 
-    customer_phone,
     shipping_address,
     items,
     subtotal,
@@ -122,9 +119,8 @@ INSERT INTO orders (
 ) VALUES 
 (
     'ORD-' || EXTRACT(EPOCH FROM NOW())::bigint,
-    'test@example.com',
-    'Test Customer',
     '+1234567890',
+    'Test Customer',
     '{"address": "123 Test St", "city": "Test City", "state": "TS", "zip": "12345"}',
     '[{"id": "1", "name": "Test Product", "price": 29.99, "quantity": 2}]',
     59.98,
@@ -136,9 +132,8 @@ INSERT INTO orders (
 ),
 (
     'ORD-' || (EXTRACT(EPOCH FROM NOW())::bigint + 1),
-    'demo@example.com',
-    'Demo User',
     '+0987654321',
+    'Demo User',
     '{"address": "456 Demo Ave", "city": "Demo City", "state": "DC", "zip": "67890"}',
     '[{"id": "2", "name": "Demo Product", "price": 49.99, "quantity": 1}]',
     49.99,

@@ -51,7 +51,7 @@ export default function PaymentSuccessPage() {
           <p className="text-center text-xs text-gray-600 dark:text-gray-400">
             Need help? Contact{" "}
             <a href="mailto:support@nicheclub.com" className="text-blue-600 dark:text-blue-400 hover:underline">
-              support@abcd.com
+              2.abdulqudoos@gmail.com
             </a>
           </p>
         </CardContent>
