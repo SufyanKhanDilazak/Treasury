@@ -171,7 +171,7 @@ const RelatedProductCard = ({ relatedProduct, index }: { relatedProduct: Related
           >
             {relatedProduct.newArrival && (
               <motion.span 
-                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2.5 py-1 text-xs font-semibold rounded-lg shadow-lg border-[0.5px] border-green-400"
+                className="bg-gradient-to-r from-green-500 to-emerald-500 text-black px-2.5 py-1 text-xs font-semibold rounded-lg shadow-lg border-[0.5px] border-green-400"
                 whileHover={{ scale: 1.05 }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -182,7 +182,7 @@ const RelatedProductCard = ({ relatedProduct, index }: { relatedProduct: Related
             )}
             {relatedProduct.onSale && (
               <motion.span 
-                className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-2.5 py-1 text-xs font-semibold rounded-lg shadow-lg border-[0.5px] border-red-400"
+                className="bg-gradient-to-r from-red-500 to-pink-500 text-black px-2.5 py-1 text-xs font-semibold rounded-lg shadow-lg border-[0.5px] border-red-400"
                 whileHover={{ scale: 1.05 }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -215,7 +215,7 @@ const RelatedProductCard = ({ relatedProduct, index }: { relatedProduct: Related
             }}
           >
             <motion.h4 
-              className="text-sm text-white font-medium mb-1.5 line-clamp-1"
+              className="text-sm text-black font-medium mb-1.5 line-clamp-1"
               whileHover={{ color: "#D946EF" }}
               transition={{ duration: 0.2 }}
             >
@@ -229,7 +229,7 @@ const RelatedProductCard = ({ relatedProduct, index }: { relatedProduct: Related
               transition={{ delay: 0.2 }}
             >
               <motion.span 
-                className="text-base font-semibold text-[#A64D9D]"
+                className="text-base font-semibold text-[#bd1f1f]"
                 whileHover={{ scale: 1.03, color: "#D946EF" }}
               >
                 PKR {relatedProduct.price.toFixed(2)}
@@ -310,6 +310,11 @@ export default function ProductClient({ product, relatedProducts }: Props) {
     sessionStorage.setItem("buyNowItem", JSON.stringify(buyNowItem));
     router.push("/checkout?buyNow=true");
   }, [product, selectedVolume, quantity, router, isSelectionComplete, displayPrice]);
+
+  const handleViewCart = useCallback(() => {
+    router.push("/cart");
+  }, [router]);
+
   const handleShare = useCallback(async () => {
     const shareData = {
       title: product.name,
@@ -351,19 +356,19 @@ export default function ProductClient({ product, relatedProducts }: Props) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#222222] pt-32 pb-16">
+    <div className="min-h-screen bg-white pt-32 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <nav className="mb-8" aria-label="Breadcrumb">
           <div className="flex items-center space-x-2 text-sm font-medium">
-            <Link href="/" className="text-white hover:text-[#A64D9D] transition-colors">
+            <Link href="/" className="text-black hover:text-[#A64D9D] transition-colors">
               Home
             </Link>
-            <ChevronRight className="h-4 w-4 text-white" />
-            <Link href="/products" className="text-white hover:text-[#A64D9D] transition-colors">
+            <ChevronRight className="h-4 w-4 text-black" />
+            <Link href="/products" className="text-black hover:text-[#A64D9D] transition-colors">
               Products
             </Link>
-            <ChevronRight className="h-4 w-4 text-white" />
-            <span className="text-white font-semibold">{product.name}</span>
+            <ChevronRight className="h-4 w-4 text-black" />
+            <span className="text-black font-semibold">{product.name}</span>
           </div>
         </nav>
 
@@ -383,20 +388,20 @@ export default function ProductClient({ product, relatedProducts }: Props) {
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-black rounded-xl">
                     <div className="text-center">
-                      <Eye className="h-16 w-16 text-white mx-auto mb-4" />
-                      <p className="text-white">No Image Available</p>
+                      <Eye className="h-16 w-16 text-black mx-auto mb-4" />
+                      <p className="text-black">No Image Available</p>
                     </div>
                   </div>
                 )}
                 <div className="absolute top-2 left-2 flex flex-col gap-2">
                   {product.newArrival && (
-                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-lg rounded-lg">
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-black border-0 shadow-lg rounded-lg">
                       <Zap className="h-3 w-3 mr-1" />
                       New
                     </Badge>
                   )}
                   {product.onSale && (
-                    <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0 shadow-lg rounded-lg">
+                    <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-black border-0 shadow-lg rounded-lg">
                       Sale
                     </Badge>
                   )}
@@ -408,16 +413,16 @@ export default function ProductClient({ product, relatedProducts }: Props) {
                       className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/90 hover:bg-black rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
                       aria-label="Previous image"
                     >
-                      <ChevronLeft className="h-4 w-4 text-white" />
+                      <ChevronLeft className="h-4 w-4 text-black" />
                     </button>
                     <button
                       onClick={() => handleImageNavigation("next")}
                       className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/90 hover:bg-black rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opa city"
                       aria-label="Next image"
                     >
-                      <ChevronRight className="h-4 w-4 text-white" />
+                      <ChevronRight className="h-4 w-4 text-black" />
                     </button>
-                    <div className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="absolute bottom-2 right-2 bg-black/60 text-black px-2 py-1 rounded-full text-xs font-medium">
                       {selectedImageIndex + 1} / {product.images.length}
                     </div>
                   </>
@@ -446,7 +451,7 @@ export default function ProductClient({ product, relatedProducts }: Props) {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-black rounded-lg">
-                        <Eye className="h-4 w-4 text-white" />
+                        <Eye className="h-4 w-4 text-black" />
                       </div>
                     )}
                   </button>
@@ -458,7 +463,7 @@ export default function ProductClient({ product, relatedProducts }: Props) {
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="space-y-3 flex-1">
-                  <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight">{product.name}</h1>
+                  <h1 className="text-3xl lg:text-4xl font-bold text-black leading-tight">{product.name}</h1>
                 </div>
                 <div className="flex items-center gap-2 ml-4">
                   <Button
@@ -467,13 +472,13 @@ export default function ProductClient({ product, relatedProducts }: Props) {
                     onClick={handleShare}
                     className="rounded-full border-[0.5px] border-[#A64D9D] hover:border-[#D946EF] transition-all hover:scale-105 bg-transparent hover:bg-[#A64D9D]/10"
                   >
-                    <Share2 className="h-4 w-4 text-white fill-white" />
+                    <Share2 className="h-4 w-4 text-black fill-white" />
                   </Button>
                 </div>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <span className="text-3xl font-bold text-white">PKR {displayPrice.toFixed(2)}</span>
+                  <span className="text-3xl font-bold text-[#bd1f1f]">PKR {displayPrice.toFixed(2)}</span>
                 </div>
                 {product.categories && product.categories.length > 0 && (
                   <div className="flex flex-wrap gap-2">
@@ -481,7 +486,7 @@ export default function ProductClient({ product, relatedProducts }: Props) {
                       <Link
                         key={category._id}
                         href={`/category/${category.slug.current}`}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#A64D9D]/20 text-white hover:bg-[#A64D9D]/40 transition-all"
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#A64D9D]/20 text-black hover:bg-[#A64D9D]/40 transition-all"
                       >
                         {category.title}
                       </Link>
@@ -493,10 +498,10 @@ export default function ProductClient({ product, relatedProducts }: Props) {
             <Separator className="bg-[#A64D9D]/50" />
             {product.description && (
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white">Description</h3>
+                <h3 className="text-lg font-semibold text-black">Description</h3>
                 <div className="prose prose-gray max-w-none">
                   <p
-                    className={`text-white leading-relaxed ${
+                    className={`text-black leading-relaxed ${
                       !showFullDescription && product.description.length > 200 ? "line-clamp-3" : ""
                     }`}
                   >
@@ -515,7 +520,7 @@ export default function ProductClient({ product, relatedProducts }: Props) {
             )}
             {product.volume && product.volume.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white">Volume (ML)</h3>
+                <h3 className="text-lg font-semibold text-black">Volume (ML)</h3>
                 <div className="grid grid-cols-6 gap-2">
                   {product.volume.map((vol) => (
                     <button
@@ -523,14 +528,14 @@ export default function ProductClient({ product, relatedProducts }: Props) {
                       onClick={() => setSelectedVolume(vol)}
                       className={`relative py-2 px-3 text-sm font-semibold rounded-lg border-[0.5px] transition-all ${
                         selectedVolume === vol
-                          ? "border-[#A64D9D] bg-[#A64D9D]/20 text-white"
-                          : "border-[#A64D9D]/50 hover:border-[#A64D9D] text-white"
+                          ? "border-[#A64D9D] bg-[#A64D9D]/20 text-black"
+                          : "border-[#A64D9D]/50 hover:border-[#A64D9D] text-black"
                       }`}
                     >
                       {vol}
                       {selectedVolume === vol && (
                         <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#A64D9D] rounded-full flex items-center justify-center">
-                          <Check className="h-2 w-2 text-white" />
+                          <Check className="h-2 w-2 text-black" />
                         </div>
                       )}
                     </button>
@@ -539,27 +544,27 @@ export default function ProductClient({ product, relatedProducts }: Props) {
               </div>
             )}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-white">Quantity</h3>
+              <h3 className="text-lg font-semibold text-black">Quantity</h3>
               <div className="flex items-center gap-4">
                 <div className="flex items-center border-[0.5px] border-[#A64D9D] rounded-lg overflow-hidden">
                   <button
                     onClick={() => adjustQuantity(-1)}
-                    className="px-3 py-2 text-white hover:bg-[#A64D9D]/20 transition-colors"
+                    className="px-3 py-2 text-black hover:bg-[#A64D9D]/20 transition-colors"
                     disabled={quantity <= 1}
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="px-4 py-2 text-lg font-semibold text-white border-x-[0.5px] border-[#A64D9D] min-w-[3rem] text-center">
+                  <span className="px-4 py-2 text-lg font-semibold text-black border-x-[0.5px] border-[#A64D9D] min-w-[3rem] text-center">
                     {quantity}
                   </span>
                   <button
                     onClick={() => adjustQuantity(1)}
-                    className="px-3 py-2 text-white hover:bg-[#A64D9D]/20 transition-colors"
+                    className="px-3 py-2 text-black hover:bg-[#A64D9D]/20 transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
-                <div className="text-sm text-white">
+                <div className="text-sm text-black">
                   <span className="text-green-400 font-medium">✓ In Stock</span>
                   <br />
                   Ready to ship
@@ -570,7 +575,7 @@ export default function ProductClient({ product, relatedProducts }: Props) {
               <Button
                 onClick={handleAddToCart}
                 disabled={!isSelectionComplete || isAddingToCart}
-                className="w-full py-3 text-lg font-semibold bg-gradient-to-r from-[#A64D9D] to-[#D946EF] text-white border-0 rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 text-lg font-semibold bg-gradient-to-r from-[#A64D9D] to-[#D946EF] text-black border-0 rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isAddingToCart ? (
                   <div className="flex items-center gap-2">
@@ -585,9 +590,18 @@ export default function ProductClient({ product, relatedProducts }: Props) {
                 )}
               </Button>
               <Button
+                onClick={handleViewCart}
+                className="w-full py-3 text-lg font-semibold bg-gradient-to-r from-[#A64D9D] to-[#D946EF] text-black border-0 rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  View Cart
+                </div>
+              </Button>
+              <Button
                 onClick={handleBuyNow}
                 disabled={!isSelectionComplete}
-                className="w-full py-3 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white border-0 rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 text-lg font-semibold bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-black border-0 rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="flex items-center gap-2">
                   <Zap className="h-5 w-5" />
@@ -602,10 +616,10 @@ export default function ProductClient({ product, relatedProducts }: Props) {
       {relatedProducts.length > 0 && (
         <div className="mt-16 w-full">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">You Might Also Like</h2>
-            <p className="text-white/80">Discover more amazing products</p>
+            <h2 className="text-2xl font-bold text-black mb-2">You Might Also Like</h2>
+            <p className="text-black">Discover more amazing products</p>
           </div>
-          <div className="bg-[#222222] border-t-[0.5px] border-b-[0.5px] border-[#A64D9D] py-8">
+          <div className="bg-white border-t-[0.5px] border-b-[0.5px] border-[#A64D9D] py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {/* Desktop Grid */}
               <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-4">
@@ -630,8 +644,8 @@ export default function ProductClient({ product, relatedProducts }: Props) {
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="hidden sm:flex -left-12 border-[#A64D9D] bg-black/50 hover:bg-[#A64D9D]/20 text-white" />
-                  <CarouselNext className="hidden sm:flex -right-12 border-[#A64D9D] bg-black/50 hover:bg-[#A64D9D]/20 text-white" />
+                  <CarouselPrevious className="hidden sm:flex -left-12 border-[#A64D9D] bg-black/50 hover:bg-[#A64D9D]/20 text-black" />
+                  <CarouselNext className="hidden sm:flex -right-12 border-[#A64D9D] bg-black/50 hover:bg-[#A64D9D]/20 text-black" />
                 </Carousel>
               </div>
             </div>

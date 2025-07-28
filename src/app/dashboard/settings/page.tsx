@@ -47,7 +47,7 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="admin-email">Admin Email</Label>
-              <Input id="admin-email" defaultValue="vaneezakhan2010@gmail.com" />
+              <Input id="admin-email" defaultValue="abdulquddoos@yahoo.com" />
             </div>
             <div className="flex items-center space-x-2">
               <input type="checkbox" id="order-notifications" defaultChecked />
@@ -75,7 +75,7 @@ export default function SettingsPage() {
               <h4 className="font-medium mb-2">Admin Users</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between p-2 bg-muted rounded">
-                  <span>vaneezakhan2010@gmail.com</span>
+                  <span>abdulquddoos@yahoo.com</span>
                   <span className="text-green-600">Active</span>
                 </div>
                 <p className="text-muted-foreground text-xs">Add more admin emails in the middleware.ts file</p>

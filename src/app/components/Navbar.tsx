@@ -267,7 +267,7 @@ export function Header() {
                                 <h3 className="text-xs sm:text-sm text-white font-medium truncate">{item.name}</h3>
                                 {item.selectedSize && <p className="text-xs text-gray-400">Size: {item.selectedSize}</p>}
                                 {item.selectedColor && <p className="text-xs text-gray-400">Color: {item.selectedColor}</p>}
-                                <p className="text-xs sm:text-sm text-white font-semibold">${item.price.toFixed(2)}</p>
+                                <p className="text-xs sm:text-sm text-white font-semibold">PKR {item.price.toFixed(2)}</p>
                               </div>
                               <div className="flex flex-col items-end gap-1">
                                 <div className="flex items-center gap-1 bg-gray-800 rounded-md">
@@ -279,7 +279,7 @@ export function Header() {
                                     <Plus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                   </Button>
                                 </div>
-                                <p className="text-xs text-white font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                                <p className="text-xs text-white font-semibold">PKR {(item.price * item.quantity).toFixed(2)}</p>
                               </div>
                             </div>
                           ))}
@@ -289,12 +289,12 @@ export function Header() {
                           <div className="mb-3 sm:mb-4">
                             <div className="flex justify-between mb-2 text-xs sm:text-sm font-bold uppercase">
                               <span className="text-gray-400">Subtotal</span>
-                              <span className="text-white">${subtotal.toFixed(2)}</span>
+                              <span className="text-white">PKR {subtotal.toFixed(2)}</span>
                             </div>
-                            <p className="text-xs text-gray-400 font-medium uppercase">Shipping and taxes calculated at checkout</p>
+
                           </div>
                           <div className="space-y-2 sm:space-y-3">
-                            <Button onClick={handleViewCart} variant="outline" className="w-full border-gray-700 hover:bg-gray-800 text-white font-bold uppercase transition-all duration-300 ease-in-out hover:scale-105 text-xs sm:text-sm">VIEW CART</Button>
+                            <Button onClick={handleViewCart} variant="outline" className="w-full border-gray-700 text-black font-bold uppercase transition-all duration-300 ease-in-out hover:scale-105 text-xs sm:text-sm">VIEW CART</Button>
                             <Button onClick={handleCheckout} className="w-full bg-[#A64D9D] hover:bg-[#9A4591] text-white font-bold uppercase transition-all duration-300 ease-in-out hover:scale-105 text-xs sm:text-sm">CHECKOUT</Button>
                             <Button onClick={handleClearCart} variant="ghost" className="w-full flex items-center justify-center text-gray-400 hover:text-red-400 font-bold uppercase transition-all duration-300 ease-in-out hover:scale-105 text-xs sm:text-sm">
                               <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
