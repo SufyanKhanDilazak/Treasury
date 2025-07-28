@@ -1,12 +1,15 @@
 // /sanity/lib/data.ts
 import { client } from './client';
+// Add the new import for BANNER_CATEGORY_QUERY
 import { 
   PRODUCTS_WITH_CATEGORIES_QUERY, 
   ALL_CATEGORIES_QUERY,
   PRODUCTS_BY_CATEGORY_QUERY,
   PRODUCT_BY_SLUG_QUERY,
   CATEGORY_BY_SLUG_QUERY,
-  HOMEPAGE_PRODUCTS_QUERY
+  HOMEPAGE_PRODUCTS_QUERY,
+  CATEGORY_WITH_IMAGES_QUERY,
+  BANNER_CATEGORY_QUERY
 } from './queries';
 import { unstable_cache } from 'next/cache';
 
@@ -29,7 +32,13 @@ export interface Category {
   _id: string;
   title: string;
   slug: { current: string };
-  banner?: string;
+  categoryBanner?: string;
+  categoryBannerAlt?: string;
+  bannerImage?: string;
+  bannerImageAlt?: string;
+  // For banner category specific query
+  bannerImageUrl?: string;
+  alt?: string;
 }
 
 export interface GroupedProducts {
@@ -106,6 +115,30 @@ export const getCachedCategoryBySlug = unstable_cache(
   }
 );
 
+// Function to get category with all image details
+export const getCachedCategoryWithImages = unstable_cache(
+  async (slug: string): Promise<Category | null> => {
+    return await client.fetch(CATEGORY_WITH_IMAGES_QUERY, { slug });
+  },
+  ['category-with-images'],
+  {
+    revalidate: 60, // ISR: 60 seconds
+    tags: ['categories']
+  }
+);
+
+// New function to get banner category specifically
+export const getCachedBannerCategory = unstable_cache(
+  async (): Promise<Category | null> => {
+    return await client.fetch(BANNER_CATEGORY_QUERY);
+  },
+  ['banner-category'],
+  {
+    revalidate: 60, // ISR: 60 seconds
+    tags: ['categories', 'banner']
+  }
+);
+
 // Group products by category
 export function groupProductsByCategory(products: Product[]): GroupedProducts {
   const grouped: GroupedProducts = {};
@@ -153,4 +186,22 @@ export function getDisplayPrice(product: Product): number {
 export function getDiscountPercentage(product: Product): number {
   if (!product.onSale || !product.salePrice) return 0;
   return Math.round(((product.price - product.salePrice) / product.price) * 100);
+}
+
+// Helper function to get the appropriate banner image for a category
+export function getCategoryBannerImage(category: Category): string | undefined {
+  // For banner category, check both bannerImageUrl (from specific query) and bannerImage
+  if (category.title === 'banner') {
+    return category.bannerImageUrl || category.bannerImage || category.categoryBanner;
+  }
+  // For other categories, use categoryBanner
+  return category.categoryBanner;
+}
+
+// Helper function to get appropriate alt text
+export function getCategoryBannerAlt(category: Category): string {
+  if (category.title === 'banner') {
+    return category.alt || category.bannerImageAlt || `${category.title} Banner`;
+  }
+  return category.categoryBannerAlt || `${category.title} Category Banner`;
 }

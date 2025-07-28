@@ -88,10 +88,10 @@ const ProductCard = memo<ProductCardProps>(({ product, index }) => {
     >
       <Link href={`/product/${product._id}`} className="block">
         <motion.div 
-          className="relative w-full aspect-[4/5] overflow-hidden bg-black border-[0.5px] border-[#A64D9D] shadow-lg"
+          className="relative w-full aspect-[4/5] overflow-hidden bg-black border-[0.5px] border-[#4A5568] shadow-lg"
           whileHover={{ 
-            borderColor: "#D946EF",
-            boxShadow: "0 10px 30px rgba(166, 77, 157, 0.3)"
+            borderColor: "#2D3748",
+            boxShadow: "0 10px 30px rgba(74, 85, 104, 0.3)"
           }}
           transition={{ duration: 0.2 }}
         >
@@ -194,15 +194,16 @@ const ProductCard = memo<ProductCardProps>(({ product, index }) => {
           transition={{ delay: 0.2, duration: 0.4 }}
         >
           <motion.div 
-            className="border-[0.5px] border-[#A64D9D] bg-black px-2 py-1 text-center transition-all duration-300 shadow-lg"
+          className="border-[0.5px] border-[#4A5568] bg-white px-2 py-1 text-center transition-all duration-300 shadow-lg"
+
             whileHover={{ 
-              borderColor: "#D946EF",
-              boxShadow: "0 5px 15px rgba(166, 77, 157, 0.2)"
+              borderColor: "#2D3748",
+              boxShadow: "0 5px 15px rgba(74, 85, 104, 0.2)"
             }}
           >
             <motion.h4 
-              className="text-sm sm:text-base md:text-lg text-white font-medium mb-1 line-clamp-1"
-              whileHover={{ color: "#D946EF" }}
+              className="text-sm sm:text-base md:text-lg text-black font-medium mb-1 line-clamp-1"
+              whileHover={{ color: "#2D3748" }}
               transition={{ duration: 0.2 }}
             >
               {product.name}
@@ -219,8 +220,8 @@ const ProductCard = memo<ProductCardProps>(({ product, index }) => {
                 {product.volume.slice(0, 3).map((vol, index) => (
                   <motion.span
                     key={index}
-                    className="text-xs text-gray-400 bg-gray-800 px-1.5 py-0.5 border-[0.5px] border-gray-600"
-                    whileHover={{ borderColor: "#A64D9D", color: "#A64D9D" }}
+                    className="text-xs text-black px-1.5 py-0.5 border-[0.5px] border-[#A64D9D]"
+                    whileHover={{ borderColor: "#4A5568", color: "#4A5568" }}
                   >
                     {vol}ml
                   </motion.span>
@@ -228,7 +229,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index }) => {
                 {product.volume.length > 3 && (
                   <motion.span
                     className="text-xs text-gray-400"
-                    whileHover={{ color: "#A64D9D" }}
+                    whileHover={{ color: "#4A5568" }}
                   >
                     +{product.volume.length - 3}
                   </motion.span>
@@ -243,10 +244,10 @@ const ProductCard = memo<ProductCardProps>(({ product, index }) => {
               transition={{ delay: 0.3 }}
             >
               <motion.span 
-                className="text-lg sm:text-xl font-semibold text-[#A64D9D]"
-                whileHover={{ scale: 1.05, color: "#D946EF" }}
+                className="text-lg sm:text-xl font-semibold text-[#bd1f1f]"
+                whileHover={{ scale: 1.05, color: "#bd1f1f" }}
               >
-                ${displayPrice.toFixed(2)}
+                PKR {displayPrice.toFixed(2)}
               </motion.span>
               {originalPrice && (
                 <motion.span 
@@ -293,8 +294,11 @@ const ProductCard = memo<ProductCardProps>(({ product, index }) => {
 ProductCard.displayName = 'ProductCard'
 
 // Product Skeleton Component
-// Product Skeleton Component
-const ProductSkeleton = memo(() => (
+interface ProductSkeletonProps {
+  // Empty interface for skeleton component
+}
+
+const ProductSkeleton = memo<ProductSkeletonProps>(() => (
   <motion.div 
     className="group"
     variants={cardVariants}
@@ -354,10 +358,10 @@ const FilterSort = memo<FilterSortProps>(({
     transition={{ delay: 0.2, duration: 0.6 }}
   >
     <motion.div 
-      className="text-gray-300 font-medium"
-      whileHover={{ color: "#A64D9D" }}
+      className="text-black font-medium"
+      whileHover={{ color: "#4A5568" }}
     >
-      Showing <span className="text-[#A64D9D] font-semibold">{totalProducts}</span> products
+      Showing <span className="text-[#4A5568] font-semibold">{totalProducts}</span> products
     </motion.div>
     
     <div className="flex flex-col sm:flex-row gap-4">
@@ -366,12 +370,12 @@ const FilterSort = memo<FilterSortProps>(({
         className="flex items-center gap-2"
         whileHover={{ scale: 1.02 }}
       >
-        <label className="text-sm text-gray-400 font-medium">Filter:</label>
+        <label className="text-sm text-black font-medium">Filter:</label>
         <motion.select
           value={filterBy}
           onChange={(e) => setFilterBy(e.target.value)}
-          className="bg-black border-[0.5px] border-[#A64D9D] text-white px-3 py-2 text-sm focus:border-[#D946EF] focus:outline-none transition-colors"
-          whileFocus={{ borderColor: "#D946EF" }}
+          className="bg-black border-[0.5px] border-[#4A5568] text-white px-3 py-2 text-sm focus:border-[#2D3748] focus:outline-none transition-colors"
+          whileFocus={{ borderColor: "#2D3748" }}
         >
           <option value="all">All Products</option>
           <option value="inStock">In Stock</option>
@@ -385,12 +389,12 @@ const FilterSort = memo<FilterSortProps>(({
         className="flex items-center gap-2"
         whileHover={{ scale: 1.02 }}
       >
-        <label className="text-sm text-gray-400 font-medium">Sort:</label>
+        <label className="text-sm text-black font-medium">Sort:</label>
         <motion.select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="bg-black border-[0.5px] border-[#A64D9D] text-white px-3 py-2 text-sm focus:border-[#D946EF] focus:outline-none transition-colors"
-          whileFocus={{ borderColor: "#D946EF" }}
+          className="bg-black border-[0.5px] border-[#4A5568] text-white px-3 py-2 text-sm focus:border-[#2D3748] focus:outline-none transition-colors"
+          whileFocus={{ borderColor: "#2D3748" }}
         >
           <option value="newest">Newest First</option>
           <option value="priceLow">Price: Low to High</option>
@@ -412,7 +416,7 @@ interface ErrorDisplayProps {
 
 const ErrorDisplay = memo<ErrorDisplayProps>(({ error, onRetry }) => (
   <motion.div 
-    className="min-h-screen bg-[#222222] flex items-center justify-center px-4"
+    className="min-h-screen bg-white flex items-center justify-center px-4"
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
   >
@@ -432,7 +436,7 @@ const ErrorDisplay = memo<ErrorDisplayProps>(({ error, onRetry }) => (
       </motion.p>
       <motion.button
         onClick={onRetry}
-        className="px-8 py-3 border-[0.5px] border-[#A64D9D] text-[#A64D9D] hover:bg-[#A64D9D] hover:text-white transition-all font-medium"
+        className="px-8 py-3 border-[0.5px] border-[#4A5568] text-[#4A5568] hover:bg-[#4A5568] hover:text-white transition-all font-medium"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         initial={{ y: 20, opacity: 0 }}
@@ -461,6 +465,7 @@ const OfficePage = () => {
       setIsLoading(true)
       setError(null)
       
+      // Get category info
       // Get category info
       const categoryData = await getCategoryBySlug('office')
       
@@ -547,7 +552,7 @@ const OfficePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#222222] mt-16">
+    <div className="min-h-screen bg-white mt-16">
       <div className="w-full px-0 py-8 sm:py-12">
         {/* Header */}
         <motion.div 
@@ -561,17 +566,17 @@ const OfficePage = () => {
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
-            <motion.h1 
-              className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 bg-gradient-to-r from-emerald-400 to-green-600 bg-clip-text text-transparent"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 100 }}
-            >
-              OFFICE COLLECTION
-            </motion.h1>
+           <motion.h1 
+  className="text-4xl sm:text-5xl md:text-6xl font-black text-black mb-4"
+  initial={{ scale: 0.8, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 100 }}
+>
+  OFFICE COLLECTION
+</motion.h1>
             
             <motion.div 
-              className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-green-500 mx-auto mb-6"
+              className="w-24 h-1 bg-gradient-to-r from-gray-500 to-slate-600 mx-auto mb-6"
               initial={{ width: 0 }}
               animate={{ width: 96 }}
               transition={{ delay: 0.5, duration: 0.8 }}
@@ -579,13 +584,13 @@ const OfficePage = () => {
           </motion.div>
           
           <motion.p 
-            className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed"
+            className="text-lg sm:text-xl text-black max-w-2xl mx-auto font-light leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            Professional fragrances designed for the modern workplace. 
-            Sophisticated scents that make a lasting impression in any professional setting.
+            Professional fragrances designed for the modern workplace. Sophisticated 
+            and refined scents that make a lasting impression in any business setting.
           </motion.p>
         </motion.div>
 
@@ -602,10 +607,10 @@ const OfficePage = () => {
 
         {/* Products Grid */}
         <motion.div 
-          className="border-[0.5px] border-[#A64D9D] bg-black backdrop-blur-md mx-0 sm:mx-4 lg:mx-8 p-6 sm:p-8 shadow-2xl"
+          className="border-[0.5px] border-[#4A5568] bg-white backdrop-blur-md mx-0 sm:mx-4 lg:mx-8 p-6 sm:p-8 shadow-2xl"
           whileHover={{ 
-            borderColor: "#D946EF",
-            boxShadow: "0 20px 50px rgba(166, 77, 157, 0.3)",
+            borderColor: "#2D3748",
+            boxShadow: "0 20px 50px rgba(74, 85, 104, 0.3)",
             transition: { duration: 0.3 }
           }}
           initial={{ opacity: 0, y: 30 }}
@@ -643,8 +648,8 @@ const OfficePage = () => {
               <motion.div 
                 className="bg-gray-900/80 border-[0.5px] border-gray-600 p-12 max-w-md mx-auto"
                 whileHover={{ 
-                  borderColor: "#A64D9D",
-                  backgroundColor: "rgba(166, 77, 157, 0.1)"
+                  borderColor: "#4A5568",
+                  backgroundColor: "rgba(74, 85, 104, 0.1)"
                 }}
               >
                 <motion.div
@@ -655,7 +660,7 @@ const OfficePage = () => {
                   💼
                 </motion.div>
                 <motion.p 
-                  className="text-gray-300 text-xl mb-3 font-medium"
+                  className="text-black text-xl mb-3 font-medium"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.7 }}
@@ -663,7 +668,7 @@ const OfficePage = () => {
                   {filterBy === 'all' ? 'No office products available' : `No products match "${filterBy}" filter`}
                 </motion.p>
                 <motion.p 
-                  className="text-gray-400 text-sm font-light"
+                  className="text-black text-sm font-light"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.9 }}
@@ -673,7 +678,7 @@ const OfficePage = () => {
                 {filterBy !== 'all' && (
                   <motion.button
                     onClick={() => setFilterBy('all')}
-                    className="mt-4 px-6 py-2 border-[0.5px] border-[#A64D9D] text-[#A64D9D] hover:bg-[#A64D9D] hover:text-white transition-all font-medium"
+                    className="mt-4 px-6 py-2 border-[0.5px] border-[#4A5568] text-[#4A5568] hover:bg-[#4A5568] hover:text-black transition-all font-medium"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     initial={{ opacity: 0, y: 10 }}
@@ -691,32 +696,32 @@ const OfficePage = () => {
         {/* Footer Stats */}
         {!isLoading && processedProducts.length > 0 && (
           <motion.div 
-            className="text-center mt-12 pt-8 border-t-[0.5px] border-[#A64D9D] px-4"
+            className="text-center mt-12 pt-8 border-t-[0.5px] border-[#4A5568] px-4"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
             <motion.div
-              className="flex flex-col sm:flex-row items-center justify-center gap-6 text-gray-400 font-light"
-              whileHover={{ color: "#A64D9D" }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-6 text-gray-black font-light"
+              whileHover={{ color: "#4A5568" }}
               transition={{ duration: 0.3 }}
             >
               <motion.span
-                whileHover={{ scale: 1.05, color: "#D946EF" }}
+                whileHover={{ scale: 1.05, color: "#2D3748" }}
               >
-                <span className="font-semibold text-[#A64D9D]">{processedProducts.length}</span> Products Shown
+                <span className="font-semibold text-black">{processedProducts.length}</span> Products Shown
               </motion.span>
               <span className="hidden sm:inline text-gray-600">•</span>
               <motion.span
-                whileHover={{ scale: 1.05, color: "#D946EF" }}
+                whileHover={{ scale: 1.05, color: "#2D3748" }}
               >
-                <span className="font-semibold text-[#A64D9D]">{products.filter(p => p.inStock).length}</span> In Stock
+                <span className="font-semibold text-black">{products.filter(p => p.inStock).length}</span> In Stock
               </motion.span>
               <span className="hidden sm:inline text-gray-600">•</span>
               <motion.span
-                whileHover={{ scale: 1.05, color: "#D946EF" }}
+                whileHover={{ scale: 1.05, color: "#2D3748" }}
               >
-                <span className="font-semibold text-[#A64D9D]">{products.filter(p => p.onSale).length}</span> On Sale
+                <span className="font-semibold text-black">{products.filter(p => p.onSale).length}</span> On Sale
               </motion.span>
             </motion.div>
           </motion.div>

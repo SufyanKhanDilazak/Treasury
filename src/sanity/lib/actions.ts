@@ -8,6 +8,8 @@ import {
   getCachedProductsByCategory,
   getCachedProductBySlug,
   getCachedCategoryBySlug,
+  getCachedCategoryWithImages,
+  getCachedBannerCategory,
   groupProductsByCategory, 
   getLimitedProductsByCategory,
   type Product, 
@@ -158,6 +160,44 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
     return null;
   } catch (error) {
     console.error('Error fetching category by slug:', error);
+    return null;
+  }
+}
+
+// Get category with all image data by slug
+export async function getCategoryWithImages(slug: string): Promise<Category | null> {
+  try {
+    if (!slug) {
+      return null;
+    }
+
+    const category = await getCachedCategoryWithImages(slug);
+    
+    // Validate category data
+    if (category && category._id && category.title && category.slug?.current) {
+      return category;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error fetching category with images by slug:', error);
+    return null;
+  }
+}
+
+// Get banner category specifically
+export async function getBannerCategory(): Promise<Category | null> {
+  try {
+    const category = await getCachedBannerCategory();
+    
+    // Validate category data
+    if (category && category._id && category.title) {
+      return category;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error fetching banner category:', error);
     return null;
   }
 }

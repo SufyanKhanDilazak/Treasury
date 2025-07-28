@@ -45,9 +45,6 @@ export function Header() {
     { name: 'WOMEN', href: '/categories/women' },
     { name: 'OFFICE', href: '/categories/office' },
     { name: 'OUDH', href: '/categories/oudh' },
-    { name: 'GIFT PACK', href: '/categories/gift-pack' },
-    { name: 'ATTAR', href: '/categories/attar' },
-    { name: 'BAKHOOR & CANDLES', href: '/categories/bakhoor-candles' },
   ], []);
 
   const handleRemoveFromCart = useCallback((item: CartItem) => {

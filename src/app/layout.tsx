@@ -32,7 +32,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="min-h-screen bg-[#222222]">
+      <body className="min-h-screen bg-white">
         <ClerkProvider>
           <CartProvider>
             <div className="min-h-screen flex flex-col">

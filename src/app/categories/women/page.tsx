@@ -194,14 +194,15 @@ const ProductCard = memo<ProductCardProps>(({ product, index }) => {
           transition={{ delay: 0.2, duration: 0.4 }}
         >
           <motion.div 
-            className="border-[0.5px] border-[#A64D9D] bg-black px-2 py-1 text-center transition-all duration-300 shadow-lg"
+          className="border-[0.5px] border-[#A64D9D] bg-white px-2 py-1 text-center transition-all duration-300 shadow-lg"
+
             whileHover={{ 
               borderColor: "#D946EF",
               boxShadow: "0 5px 15px rgba(166, 77, 157, 0.2)"
             }}
           >
             <motion.h4 
-              className="text-sm sm:text-base md:text-lg text-white font-medium mb-1 line-clamp-1"
+              className="text-sm sm:text-base md:text-lg text-black font-medium mb-1 line-clamp-1"
               whileHover={{ color: "#D946EF" }}
               transition={{ duration: 0.2 }}
             >
@@ -219,7 +220,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index }) => {
                 {product.volume.slice(0, 3).map((vol, index) => (
                   <motion.span
                     key={index}
-                    className="text-xs text-gray-400 bg-gray-800 px-1.5 py-0.5 border-[0.5px] border-gray-600"
+                    className="text-xs text-black px-1.5 py-0.5 border-[0.5px] border-[#A64D9D]"
                     whileHover={{ borderColor: "#A64D9D", color: "#A64D9D" }}
                   >
                     {vol}ml
@@ -243,10 +244,10 @@ const ProductCard = memo<ProductCardProps>(({ product, index }) => {
               transition={{ delay: 0.3 }}
             >
               <motion.span 
-                className="text-lg sm:text-xl font-semibold text-[#A64D9D]"
-                whileHover={{ scale: 1.05, color: "#D946EF" }}
+                className="text-lg sm:text-xl font-semibold text-[#bd1f1f]"
+                whileHover={{ scale: 1.05, color: "#bd1f1f" }}
               >
-                ${displayPrice.toFixed(2)}
+                PKR {displayPrice.toFixed(2)}
               </motion.span>
               {originalPrice && (
                 <motion.span 
@@ -357,7 +358,7 @@ const FilterSort = memo<FilterSortProps>(({
     transition={{ delay: 0.2, duration: 0.6 }}
   >
     <motion.div 
-      className="text-gray-300 font-medium"
+      className="text-black font-medium"
       whileHover={{ color: "#A64D9D" }}
     >
       Showing <span className="text-[#A64D9D] font-semibold">{totalProducts}</span> products
@@ -369,7 +370,7 @@ const FilterSort = memo<FilterSortProps>(({
         className="flex items-center gap-2"
         whileHover={{ scale: 1.02 }}
       >
-        <label className="text-sm text-gray-400 font-medium">Filter:</label>
+        <label className="text-sm text-black font-medium">Filter:</label>
         <motion.select
           value={filterBy}
           onChange={(e) => setFilterBy(e.target.value)}
@@ -388,7 +389,7 @@ const FilterSort = memo<FilterSortProps>(({
         className="flex items-center gap-2"
         whileHover={{ scale: 1.02 }}
       >
-        <label className="text-sm text-gray-400 font-medium">Sort:</label>
+        <label className="text-sm text-black font-medium">Sort:</label>
         <motion.select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
@@ -415,7 +416,7 @@ interface ErrorDisplayProps {
 
 const ErrorDisplay = memo<ErrorDisplayProps>(({ error, onRetry }) => (
   <motion.div 
-    className="min-h-screen bg-[#222222] flex items-center justify-center px-4"
+    className="min-h-screen bg-white flex items-center justify-center px-4"
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
   >
@@ -551,7 +552,7 @@ const WomenPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#222222] mt-16">
+    <div className="min-h-screen bg-white mt-16">
       <div className="w-full px-0 py-8 sm:py-12">
         {/* Header */}
         <motion.div 
@@ -565,14 +566,14 @@ const WomenPage = () => {
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
-            <motion.h1 
-              className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 bg-gradient-to-r from-pink-400 to-purple-600 bg-clip-text text-transparent"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 100 }}
-            >
-              WOMEN&apos;S COLLECTION
-            </motion.h1>
+           <motion.h1 
+  className="text-4xl sm:text-5xl md:text-6xl font-black text-black mb-4"
+  initial={{ scale: 0.8, opacity: 0 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 100 }}
+>
+  WOMEN&apos;S COLLECTION
+</motion.h1>
             
             <motion.div 
               className="w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-500 mx-auto mb-6"
@@ -583,7 +584,7 @@ const WomenPage = () => {
           </motion.div>
           
           <motion.p 
-            className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed"
+            className="text-lg sm:text-xl text-black max-w-2xl mx-auto font-light leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
@@ -606,7 +607,7 @@ const WomenPage = () => {
 
         {/* Products Grid */}
         <motion.div 
-          className="border-[0.5px] border-[#A64D9D] bg-black backdrop-blur-md mx-0 sm:mx-4 lg:mx-8 p-6 sm:p-8 shadow-2xl"
+          className="border-[0.5px] border-[#A64D9D] bg-white backdrop-blur-md mx-0 sm:mx-4 lg:mx-8 p-6 sm:p-8 shadow-2xl"
           whileHover={{ 
             borderColor: "#D946EF",
             boxShadow: "0 20px 50px rgba(166, 77, 157, 0.3)",
@@ -659,7 +660,7 @@ const WomenPage = () => {
                   👸
                 </motion.div>
                 <motion.p 
-                  className="text-gray-300 text-xl mb-3 font-medium"
+                  className="text-black text-xl mb-3 font-medium"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.7 }}
@@ -667,7 +668,7 @@ const WomenPage = () => {
                   {filterBy === 'all' ? 'No women products available' : `No products match "${filterBy}" filter`}
                 </motion.p>
                 <motion.p 
-                  className="text-gray-400 text-sm font-light"
+                  className="text-black text-sm font-light"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.9 }}
@@ -677,7 +678,7 @@ const WomenPage = () => {
                 {filterBy !== 'all' && (
                   <motion.button
                     onClick={() => setFilterBy('all')}
-                    className="mt-4 px-6 py-2 border-[0.5px] border-[#A64D9D] text-[#A64D9D] hover:bg-[#A64D9D] hover:text-white transition-all font-medium"
+                    className="mt-4 px-6 py-2 border-[0.5px] border-[#A64D9D] text-[#A64D9D] hover:bg-[#A64D9D] hover:text-black transition-all font-medium"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     initial={{ opacity: 0, y: 10 }}
@@ -701,26 +702,26 @@ const WomenPage = () => {
             transition={{ duration: 0.8, delay: 0.5 }}
           >
             <motion.div
-              className="flex flex-col sm:flex-row items-center justify-center gap-6 text-gray-400 font-light"
+              className="flex flex-col sm:flex-row items-center justify-center gap-6 text-gray-black font-light"
               whileHover={{ color: "#A64D9D" }}
               transition={{ duration: 0.3 }}
             >
               <motion.span
                 whileHover={{ scale: 1.05, color: "#D946EF" }}
               >
-                <span className="font-semibold text-[#A64D9D]">{processedProducts.length}</span> Products Shown
+                <span className="font-semibold text-black">{processedProducts.length}</span> Products Shown
               </motion.span>
               <span className="hidden sm:inline text-gray-600">•</span>
               <motion.span
                 whileHover={{ scale: 1.05, color: "#D946EF" }}
               >
-                <span className="font-semibold text-[#A64D9D]">{products.filter(p => p.inStock).length}</span> In Stock
+                <span className="font-semibold text-black">{products.filter(p => p.inStock).length}</span> In Stock
               </motion.span>
               <span className="hidden sm:inline text-gray-600">•</span>
               <motion.span
                 whileHover={{ scale: 1.05, color: "#D946EF" }}
               >
-                <span className="font-semibold text-[#A64D9D]">{products.filter(p => p.onSale).length}</span> On Sale
+                <span className="font-semibold text-black">{products.filter(p => p.onSale).length}</span> On Sale
               </motion.span>
             </motion.div>
           </motion.div>

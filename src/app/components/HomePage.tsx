@@ -13,57 +13,39 @@ import {
 } from "@/components/ui/carousel"
 import { getHomepageProducts } from '../../sanity/lib/actions'
 import type { GroupedProducts, Product } from '@/sanity/lib/data'
-import WhatsAppFloatingIcon from './WhatsaAppFloatingIcon' // Add this line
+import WhatsAppFloatingIcon from './WhatsaAppFloatingIcon'
 
 // Category configuration with predefined banners
 const CATEGORY_CONFIG = {
   'summer': {
     title: 'SUMMER',
     description: 'Fresh and vibrant scents for the sunny season',
-    textColor: 'text-white',
+    textColor: 'text-black',
     route: '/categories/summer'
   },
   'men': {
     title: 'MEN',
     description: 'Bold and sophisticated fragrances for modern men',
-    textColor: 'text-white',
+    textColor: 'text-black',
     route: '/categories/men'
   },
   'women': {
     title: 'WOMEN',
     description: 'Elegant and captivating scents for every woman',
-    textColor: 'text-white',
+    textColor: 'text-black',
     route: '/categories/women'
   },
   'office': {
     title: 'OFFICE',
     description: 'Professional and refined fragrances for work',
-    textColor: 'text-white',
+    textColor: 'text-black',
     route: '/categories/office'
   },
   'oudh': {
     title: 'OUDH',
     description: 'Rich and luxurious traditional Middle Eastern scents',
-    textColor: 'text-white',
+    textColor: 'text-black',
     route: '/categories/oudh'
-  },
-  'gift_pack': {
-    title: 'GIFT PACK',
-    description: 'Beautifully curated sets perfect for gifting',
-    textColor: 'text-white',
-    route: '/categories/gift-pack'
-  },
-  'attar': {
-    title: 'ATTAR',
-    description: 'Pure and concentrated oil-based fragrances',
-    textColor: 'text-white',
-    route: '/categories/attar'
-  },
-  'bakhoor_candles': {
-    title: 'BAKHOOR & CANDLES',
-    description: 'Aromatic incense and scented candles',
-    textColor: 'text-white',
-    route: '/categories/bakhoor-candles'
   }
 } as const
 
@@ -155,7 +137,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
     >
       <Link href={`/product/${product._id}`} className="block">
         <motion.div 
-          className="relative w-full aspect-[8/10] overflow-hidden bg-black/80 border-[0.5px] border-[#A64D9D] rounded-xl shadow-lg backdrop-blur-sm"
+          className="relative w-full aspect-[8/10] overflow-hidden bg-white border-[0.5px] border-[#A64D9D] rounded-xl shadow-lg backdrop-blur-sm"
           whileHover={{ 
             borderColor: "#D946EF",
             boxShadow: "0 8px 25px rgba(166, 77, 157, 0.3)"
@@ -198,7 +180,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
               />
             </motion.div>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm font-light bg-black/80 rounded-xl backdrop-blur-sm">
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm font-light bg-white rounded-xl backdrop-blur-sm">
               No Image Available
             </div>
           )}
@@ -212,7 +194,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
           >
             {product.newArrival && (
               <motion.span 
-                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2.5 py-1 text-xs font-semibold rounded-lg shadow-lg border-[0.5px] border-green-400"
+                className="bg-gradient-to-r from-green-500 to-emerald-500 text-black  px-2.5 py-1 text-xs font-semibold rounded-lg shadow-lg border-[0.5px] border-green-400"
                 whileHover={{ scale: 1.05 }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -223,7 +205,7 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
             )}
             {product.onSale && (
               <motion.span 
-                className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-2.5 py-1 text-xs font-semibold rounded-lg shadow-lg border-[0.5px] border-red-400"
+                className="bg-gradient-to-r from-red-500 to-pink-500 text-black  px-2.5 py-1 text-xs font-semibold rounded-lg shadow-lg border-[0.5px] border-red-400"
                 whileHover={{ scale: 1.05 }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -249,14 +231,14 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
           transition={{ delay: 0.1, duration: 0.3 }}
         >
           <motion.div 
-            className="border-[0.5px] border-[#A64D9D] bg-black/80 backdrop-blur-sm px-3 py-2.5 text-center transition-all duration-300 shadow-lg rounded-lg"
+            className="border-[0.5px] border-[#A64D9D] bg-white px-3 py-2.5 text-center transition-all duration-300 shadow-lg rounded-lg"
             whileHover={{ 
               borderColor: "#D946EF",
               boxShadow: "0 4px 12px rgba(166, 77, 157, 0.2)"
             }}
           >
             <motion.h4 
-              className="text-sm text-white font-medium mb-1.5 line-clamp-1"
+              className="text-sm text-black  font-medium mb-1.5 line-clamp-1"
               whileHover={{ color: "#D946EF" }}
               transition={{ duration: 0.2 }}
             >
@@ -270,8 +252,8 @@ const ProductCard = memo<ProductCardProps>(({ product, index, isMobile = false }
               transition={{ delay: 0.2 }}
             >
               <motion.span 
-                className="text-base font-semibold text-[#A64D9D]"
-                whileHover={{ scale: 1.03, color: "#D946EF" }}
+                className="text-base font-semibold text-[#bd1f1f]"
+                whileHover={{ scale: 1.03, color: "#bd1f1f" }}
               >
                 PKR {displayPrice.toFixed(2)}
               </motion.span>
@@ -315,7 +297,7 @@ const ProductSkeleton = memo<{ isMobile?: boolean }>(({ isMobile = false }) => {
       </div>
       
       <div className="mt-3">
-        <div className="border-[0.5px] border-gray-600 bg-black/80 backdrop-blur-sm px-3 py-2.5 text-center rounded-lg">
+        <div className="border-[0.5px] border-gray-600 bg-white px-3 py-2.5 text-center rounded-lg">
           <motion.div 
             className="h-3 bg-gray-700 mb-1.5 rounded"
             animate={{ opacity: [0.5, 1, 0.5] }}
@@ -334,7 +316,7 @@ const ProductSkeleton = memo<{ isMobile?: boolean }>(({ isMobile = false }) => {
 
 ProductSkeleton.displayName = 'ProductSkeleton'
 
-// Mobile Carousel Component with debugging
+// Mobile Carousel Component
 const MobileCarousel = memo<{ products: Product[]; categoryKey: string }>(({ products, categoryKey }) => {
   const displayProducts = useMemo(() => products.slice(0, 8), [products])
   
@@ -368,10 +350,10 @@ const MobileCarousel = memo<{ products: Product[]; categoryKey: string }>(({ pro
                 
         {/* Force buttons to be visible and centered higher */}
         <CarouselPrevious 
-          className="absolute left-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-black/80 backdrop-blur-sm text-white hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
+          className="absolute left-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-white text-black hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
         />
         <CarouselNext 
-          className="absolute right-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-black/80 backdrop-blur-sm text-white hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
+          className="absolute right-2 top-[40%] -translate-y-1/2 border-[#A64D9D] bg-white text-black  hover:bg-[#A64D9D] hover:border-[#D946EF] z-10 w-8 h-8"
         />
       </Carousel>
     </div>
@@ -410,15 +392,15 @@ function CategoryBanner({ categoryKey, config, products }: {
         transition={{ type: "spring" as const, stiffness: 400, damping: 40 }}
       >
         <motion.div 
-          className="relative h-28 md:h-40 overflow-hidden border-[0.5px] border-[#A64D9D] shadow-xl rounded-xl backdrop-blur-sm bg-black/80"
+          className="relative h-28 md:h-40 overflow-hidden border-[0.5px] border-[#A64D9D] shadow-xl rounded-xl backdrop-blur-sm bg-white"
           whileHover={{ 
             borderColor: "#D946EF",
             boxShadow: "0 12px 35px rgba(166, 77, 157, 0.3)"
           }}
         >
           <motion.div 
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-xl"
-            whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.02)" }}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/20 to-transparent rounded-xl"
+            whileHover={{ backgroundColor: "rgba(0, 0, 0, 0.02)" }}
             transition={{ duration: 0.3 }}
           />
           
@@ -447,7 +429,7 @@ function CategoryBanner({ categoryKey, config, products }: {
             
             <Link href={config.route}>
               <motion.button
-                className="bg-black/70 hover:bg-[#A64D9D] text-white px-4 py-1.5 text-xs font-medium border-[0.5px] border-[#A64D9D] hover:border-[#D946EF] transition-all duration-300 rounded-lg backdrop-blur-sm"
+                className="bg-white hover:bg-[#A64D9D] text-black  px-4 py-1.5 text-xs font-medium border-[0.5px] border-[#A64D9D] hover:border-[#D946EF] transition-all duration-300 rounded-lg backdrop-blur-sm"
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
@@ -467,7 +449,7 @@ function CategoryBanner({ categoryKey, config, products }: {
           <MobileCarousel products={products} categoryKey={categoryKey} />
         ) : (
           <motion.div 
-            className="border-[0.5px] border-[#A64D9D] bg-black/80 backdrop-blur-sm p-4 md:p-6 shadow-xl rounded-xl"
+            className="border-[0.5px] border-[#A64D9D] bg-white p-4 md:p-6 shadow-xl rounded-xl"
             whileHover={{ 
               borderColor: "#D946EF",
               boxShadow: "0 15px 40px rgba(166, 77, 157, 0.2)"
@@ -576,11 +558,11 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen relative">
+      <div className="min-h-screen relative bg-white">
         {/* Background Image */}
         <div className="fixed inset-0 w-full h-full z-0">
           <Image
-            src="/bg.jpg"
+            src="/img.png"
             alt="Background"
             fill
             className="object-cover"
@@ -596,7 +578,7 @@ export default function HomePage() {
           animate={{ opacity: 1 }}
         >
           <motion.div 
-            className="text-center border-[0.5px] border-red-500 bg-black/80 backdrop-blur-sm p-8 rounded-xl"
+            className="text-center border-[0.5px] border-red-500 bg-white p-8 rounded-xl"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring" as const, stiffness: 100, damping: 15 }}
@@ -611,7 +593,7 @@ export default function HomePage() {
             </motion.p>
             <motion.button
               onClick={fetchProducts}
-              className="px-6 py-2 border-[0.5px] border-[#A64D9D] text-[#A64D9D] hover:bg-[#A64D9D] hover:text-white transition-all font-medium rounded-lg backdrop-blur-sm"
+              className="px-6 py-2 border-[0.5px] border-[#A64D9D] text-[#A64D9D] hover:bg-[#A64D9D] hover:text-black  transition-all font-medium rounded-lg backdrop-blur-sm"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               initial={{ y: 20, opacity: 0 }}
@@ -628,19 +610,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Background Image */}
-      <div className="fixed inset-0 w-full h-full z-0">
-        <Image
-          src="/bg.jpg"
-          alt="Background"
-          fill
-          className="object-cover"
-          quality={85}
-          priority
-        />
-        <div className="absolute inset-0 bg-black/50" />
-      </div>
-
       {/* Content */}
       <div className="relative z-10 w-full px-0 py-8 md:py-12">
         {/* Header */}
@@ -650,22 +619,6 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <motion.h1 
-            className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-4 bg-gradient-to-r from-white to-[#A64D9D] bg-clip-text text-transparent drop-shadow-lg"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.6, type: "spring" as const, stiffness: 120 }}
-          >
-            Fragrance Collection
-          </motion.h1>
-          <motion.p 
-            className="text-base md:text-lg text-gray-100 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            Discover our exquisite range of perfumes, attars, and fragrances crafted for every occasion
-          </motion.p>
         </motion.div>
 
         {/* Category Sections */}
@@ -708,12 +661,12 @@ export default function HomePage() {
           transition={{ duration: 0.6, delay: 0.8 }}
         >
           <motion.p 
-            className="text-gray-300 font-light drop-shadow-sm"
-            whileHover={{ color: "#A64D9D" }}
+            className="text-black font-light drop-shadow-sm"
+            whileHover={{ color: "black" }}
             transition={{ duration: 0.3 }}
           >
             Showing <motion.span 
-              className="font-semibold text-[#A64D9D]"
+              className="font-semibold text-black"
               animate={{ scale: [1, 1.02, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >

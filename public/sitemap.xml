@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://scentstudiopk.com/</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Category Pages - Fragrance Collections -->
+  <url>
+    <loc>https://scentstudiopk.com/categories/all_product</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <url>
+    <loc>https://scentstudiopk.com/categories/men</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://scentstudiopk.com/categories/office</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://scentstudiopk.com/categories/oudh</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://scentstudiopk.com/categories/summer</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://scentstudiopk.com/categories/women</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Premium Fragrance Products -->
+  <url>
+    <loc>https://scentstudiopk.com/product/03cdd2f8-4961-4a5c-9aae-f13fccb30c29</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://scentstudiopk.com/product/fantasy</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://scentstudiopk.com/product/08047d49-5c80-4c74-83e1-fa9aa400ad03</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Add your other 27 fragrance product URLs here -->
+  <!-- Example format:
+  <url>
+    <loc>https://scentstudiopk.com/product/your-product-id</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  -->
+  
+  <!-- Shopping & Checkout Pages -->
+  <url>
+    <loc>https://scentstudiopk.com/checkout</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://scentstudiopk.com/payment-success</loc>
+    <lastmod>2025-07-28</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+</urlset>

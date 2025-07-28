@@ -7,9 +7,7 @@ const customSlugify = (input: string) => {
     'women': 'women',
     'office': 'office',
     'oudh': 'oudh',
-    'gift_pack': 'gift-pack',
-    'attar': 'attar',
-    'bakhoor_candles': 'bakhoor-candles'
+    'banner': 'banner',
   };
   return slugMap[input] || input.toLowerCase().replace(/\s+/g, '-');
 };
@@ -30,9 +28,7 @@ export const categorySchema = defineType({
           { title: 'WOMEN', value: 'women' },
           { title: 'OFFICE', value: 'office' },
           { title: 'OUDH', value: 'oudh' },
-          { title: 'GIFT PACK', value: 'gift_pack' },
-          { title: 'ATTAR', value: 'attar' },
-          { title: 'BAKHOOR & CANDLES', value: 'bakhoor_candles' }
+          { title: 'BANNER', value: 'banner' }
         ],
         layout: 'dropdown'
       },
@@ -57,6 +53,16 @@ export const categorySchema = defineType({
         hotspot: true
       },
       description: 'Banner image for the category page'
+    }),
+    defineField({
+      name: 'bannerImage',
+      title: 'Banner Image',
+      type: 'image',
+      options: {
+        hotspot: true
+      },
+      description: 'Main banner image (used specifically for banner category)',
+      hidden: ({ document }) => document?.title !== 'banner'
     })
   ]
 })

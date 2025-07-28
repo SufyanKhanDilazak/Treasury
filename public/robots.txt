@@ -1,0 +1,22 @@
+# Allow all web crawlers
+User-agent: *
+Allow: /
+
+# Block access to admin/dashboard areas
+Disallow: /dashboard/
+Disallow: /api/
+
+# Block access to authentication pages (optional)
+Disallow: /sign-in/
+Disallow: /sign-up/
+
+# Block access to studio pages
+Disallow: /studio/
+
+# Allow specific important pages
+Allow: /
+Allow: /categories/
+Allow: /product/
+
+# Sitemap location
+Sitemap: https://scentstudiopk.com/sitemap.xml

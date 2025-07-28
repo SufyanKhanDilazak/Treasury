@@ -16,7 +16,10 @@ export const PRODUCTS_WITH_CATEGORIES_QUERY = `*[_type == "product"] | order(_cr
     _id,
     title,
     slug,
-    "banner": categoryBanner.asset->url
+    "categoryBanner": categoryBanner.asset->url,
+    "categoryBannerAlt": categoryBanner.alt,
+    "bannerImage": bannerImage.asset->url,
+    "bannerImageAlt": bannerImage.alt
   }
 }`;
 
@@ -36,7 +39,8 @@ export const PRODUCTS_BY_CATEGORY_QUERY = `*[_type == "product" && references($c
     _id,
     title,
     slug,
-    "banner": categoryBanner.asset->url
+    "banner": categoryBanner.asset->url,
+    "bannerImage": bannerImage.asset->url
   }
 }`;
 
@@ -56,7 +60,8 @@ export const PRODUCT_BY_SLUG_QUERY = `*[_type == "product" && slug.current == $s
     _id,
     title,
     slug,
-    "banner": categoryBanner.asset->url
+    "banner": categoryBanner.asset->url,
+    "bannerImage": bannerImage.asset->url
   }
 }`;
 
@@ -65,7 +70,10 @@ export const ALL_CATEGORIES_QUERY = `*[_type == "category"] | order(title asc) {
   _id,
   title,
   slug,
-  "banner": categoryBanner.asset->url
+  "categoryBanner": categoryBanner.asset->url,
+  "categoryBannerAlt": categoryBanner.alt,
+  "bannerImage": bannerImage.asset->url,
+  "bannerImageAlt": bannerImage.alt
 }`;
 
 // Query for category by slug
@@ -73,7 +81,10 @@ export const CATEGORY_BY_SLUG_QUERY = `*[_type == "category" && slug.current == 
   _id,
   title,
   slug,
-  "banner": categoryBanner.asset->url
+  "categoryBanner": categoryBanner.asset->url,
+  "categoryBannerAlt": categoryBanner.alt,
+  "bannerImage": bannerImage.asset->url,
+  "bannerImageAlt": bannerImage.alt
 }`;
 
 // Query for featured/homepage products (limited per category)
@@ -91,6 +102,27 @@ export const HOMEPAGE_PRODUCTS_QUERY = `*[_type == "product" && inStock == true]
     _id,
     title,
     slug,
-    "banner": categoryBanner.asset->url
+    "banner": categoryBanner.asset->url,
+    "bannerImage": bannerImage.asset->url
   }
+}`;
+
+// New query specifically for getting category with images
+export const CATEGORY_WITH_IMAGES_QUERY = `*[_type == "category" && slug.current == $slug][0] {
+  _id,
+  title,
+  slug,
+  "categoryBanner": categoryBanner.asset->url,
+  "categoryBannerAlt": categoryBanner.alt,
+  "bannerImage": bannerImage.asset->url,
+  "bannerImageAlt": bannerImage.alt
+}`;
+
+// Query specifically for banner category
+export const BANNER_CATEGORY_QUERY = `*[_type == "category" && title == "banner" && defined(bannerImage)][0] {
+  _id,
+  title,
+  slug,
+  "bannerImageUrl": bannerImage.asset->url,
+  "alt": bannerImage.alt
 }`;
