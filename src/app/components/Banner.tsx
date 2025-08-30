@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback, useMemo } from "react";
 import * as THREE from "three";
 
 /* =========================
-   TreasureStage (element-sized + observer)
+   ORIGINAL TreasureStage (kept same visuals/logic)
    ========================= */
 function TreasureStage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,8 +14,9 @@ function TreasureStage() {
   const chestRef = useRef<THREE.Group | null>(null);
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
+  const prevSizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
 
-  const getScaleAndPosition = useCallback((w: number) => {
+  const getScaleAndPosition = useCallback((w: number, _h: number) => {
     const isMobile = w < 768;
     const scale = isMobile ? 0.22 : 0.28;
     const y = isMobile ? -1.2 : -2.6;
@@ -25,8 +26,10 @@ function TreasureStage() {
   const setup = useCallback(async () => {
     if (!canvasRef.current) return null;
 
-    const host = canvasRef.current.parentElement!;
-    const { width, height } = host.getBoundingClientRect();
+    const el = canvasRef.current.parentElement!;
+    const width = el.clientWidth;
+    const height = el.clientHeight;
+    prevSizeRef.current = { w: width, h: height };
 
     const scene = new THREE.Scene();
 
@@ -41,9 +44,8 @@ function TreasureStage() {
       powerPreference: "high-performance",
     });
 
-    // cap DPR; set once during setup to avoid density "jumps"
     const dprCap = width < 480 ? 1.25 : width < 768 ? 1.5 : 2;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, dprCap));
     renderer.setSize(width, height, false);
     renderer.setClearColor(0x000000, 0);
 
@@ -74,7 +76,7 @@ function TreasureStage() {
               m.envMapIntensity = 1.2;
             }
           });
-          const { scale, y } = getScaleAndPosition(width);
+          const { scale, y } = getScaleAndPosition(width, height);
           chest.scale.setScalar(scale);
           chest.position.set(0, y, 0);
           scene.add(chest);
@@ -107,18 +109,27 @@ function TreasureStage() {
     rafRef.current = requestAnimationFrame(animate);
   }, []);
 
-  const resizeToHost = useCallback(() => {
+  // Ignore tiny mobile UI-driven resizes (URL bar show/hide)
+  const onResize = useCallback(() => {
     if (!rendererRef.current || !cameraRef.current || !chestRef.current || !canvasRef.current)
       return;
+    const el = canvasRef.current.parentElement!;
+    const w = el.clientWidth;
+    const h = el.clientHeight;
 
-    const host = canvasRef.current.parentElement!;
-    const { width, height } = host.getBoundingClientRect();
+    const prev = prevSizeRef.current;
+    const deltaW = Math.abs(w - prev.w);
+    const deltaH = Math.abs(h - prev.h);
 
-    rendererRef.current.setSize(width, height, false);
-    cameraRef.current.aspect = width / height;
+    // Only re-layout if orientation or significant change (>80px) or width changes
+    if (deltaW === 0 && deltaH < 80) return;
+
+    prevSizeRef.current = { w, h };
+    rendererRef.current.setSize(w, h, false);
+    cameraRef.current.aspect = w / h;
     cameraRef.current.updateProjectionMatrix();
 
-    const { scale, y } = getScaleAndPosition(width);
+    const { scale, y } = getScaleAndPosition(w, h);
     chestRef.current.scale.setScalar(scale);
     chestRef.current.position.set(0, y, 0);
   }, [getScaleAndPosition]);
@@ -131,20 +142,16 @@ function TreasureStage() {
       if (data) rafRef.current = requestAnimationFrame(animate);
     })();
 
-    // Observe the section size instead of window.innerHeight
-    let ro: ResizeObserver | null = null;
-    if (canvasRef.current?.parentElement) {
-      ro = new ResizeObserver(() => {
-        // schedule via rAF for smoother updates
-        requestAnimationFrame(resizeToHost);
-      });
-      ro.observe(canvasRef.current.parentElement);
-    }
+    const handle = () => onResize();
+    window.addEventListener("resize", handle, { passive: true });
+    // Also listen to orientation changes explicitly
+    window.addEventListener("orientationchange", handle, { passive: true });
 
     return () => {
       mounted = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      ro?.disconnect();
+      window.removeEventListener("resize", handle);
+      window.removeEventListener("orientationchange", handle);
       sceneRef.current?.traverse((obj) => {
         const mesh = obj as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
@@ -153,27 +160,31 @@ function TreasureStage() {
       });
       rendererRef.current?.dispose();
     };
-  }, [setup, animate, resizeToHost]);
+  }, [setup, animate, onResize]);
 
   return (
     <div className="pointer-events-none absolute inset-0 z-0">
-      <canvas ref={canvasRef} className="w-full h-full pointer-events-none select-none" />
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full pointer-events-none select-none [transform:translateZ(0)]"
+      />
     </div>
   );
 }
 
 /* =========================
-   Keys & Coins Overlay (absolute + element-sized)
+   FIXED Keys & Coins Overlay (same visuals; smarter resize)
    ========================= */
 function KeysCoinsOverlay() {
-  const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
+  const prevSizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
 
+  // explicit refs to the two system groups
   const keysSystemRef = useRef<THREE.Group | null>(null);
   const coinsSystemRef = useRef<THREE.Group | null>(null);
 
@@ -291,9 +302,11 @@ function KeysCoinsOverlay() {
   );
 
   const setup = useCallback(() => {
-    if (!canvasRef.current || !hostRef.current) return;
+    if (!canvasRef.current) return;
 
-    const { width, height } = hostRef.current.getBoundingClientRect();
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    prevSizeRef.current = { w: width, h: height };
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
@@ -308,20 +321,23 @@ function KeysCoinsOverlay() {
     });
 
     const dprCap = width < 480 ? 1.25 : width < 768 ? 1.5 : 2;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, dprCap));
     renderer.setSize(width, height, false);
     renderer.setClearColor(0x000000, 0);
 
+    // minimal lighting
     scene.add(new THREE.AmbientLight(0xffffff, 0.85));
     const dir = new THREE.DirectionalLight(0xffffff, 0.9);
     dir.position.set(6, 10, 8);
     scene.add(dir);
 
+    // Keys system
     const keysSystem = new THREE.Group();
     keysCfg.forEach((cfg) => keysSystem.add(createKey(cfg)));
     scene.add(keysSystem);
     keysSystemRef.current = keysSystem;
 
+    // Coins system
     const coinsSystem = new THREE.Group();
     coinsCfg.forEach((cfg) => coinsSystem.add(createCoin(cfg)));
     scene.add(coinsSystem);
@@ -375,11 +391,23 @@ function KeysCoinsOverlay() {
     rafRef.current = requestAnimationFrame(animate);
   }, []);
 
-  const resizeToHost = useCallback(() => {
-    if (!rendererRef.current || !cameraRef.current || !hostRef.current) return;
-    const { width, height } = hostRef.current.getBoundingClientRect();
-    rendererRef.current.setSize(width, height, false);
-    cameraRef.current.aspect = width / height;
+  // Ignore tiny mobile UI-driven resizes; respond to real changes
+  const onResize = useCallback(() => {
+    if (!rendererRef.current || !cameraRef.current) return;
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    const prev = prevSizeRef.current;
+    const deltaW = Math.abs(w - prev.w);
+    const deltaH = Math.abs(h - prev.h);
+
+    // Only react on significant change or width changes
+    if (deltaW === 0 && deltaH < 80) return;
+
+    prevSizeRef.current = { w, h };
+    rendererRef.current.setSize(w, h, false);
+    cameraRef.current.aspect = w / h;
     cameraRef.current.updateProjectionMatrix();
   }, []);
 
@@ -387,15 +415,15 @@ function KeysCoinsOverlay() {
     setup();
     rafRef.current = requestAnimationFrame(animate);
 
-    // Observe host size (no window.innerHeight dependence)
-    const ro = new ResizeObserver(() => {
-      requestAnimationFrame(resizeToHost);
-    });
-    if (hostRef.current) ro.observe(hostRef.current);
+    const handle = () => onResize();
+    window.addEventListener("resize", handle, { passive: true });
+    window.addEventListener("orientationchange", handle, { passive: true });
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      ro.disconnect();
+      window.removeEventListener("resize", handle);
+      window.removeEventListener("orientationchange", handle);
+      // dispose
       sceneRef.current?.traverse((obj) => {
         const mesh = obj as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
@@ -404,34 +432,37 @@ function KeysCoinsOverlay() {
       });
       rendererRef.current?.dispose();
     };
-  }, [setup, animate, resizeToHost]);
+  }, [setup, animate, onResize]);
 
   return (
-    <div ref={hostRef} className="pointer-events-none absolute inset-0 z-[1]">
-      <canvas ref={canvasRef} className="w-full h-full pointer-events-none select-none" />
+    <div className="pointer-events-none fixed inset-0 z-[9999]">
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full pointer-events-none select-none [transform:translateZ(0)]"
+      />
     </div>
   );
 }
 
 /* =========================
-   PAGE
+   PAGE (same visuals; stable height via svh)
    ========================= */
 export default function HomePage() {
   return (
     <div
       className="
         relative
-        h-[55dvh] sm:h-[65dvh] md:h-[70dvh] lg:h-[60dvh]
+        h-[55svh] sm:h-[65svh] md:h-[70svh] lg:h-[60svh]
         bg-[#98afc7] text-black overflow-hidden
         overscroll-y-contain
         [touch-action:pan-y]
         max-w-full
       "
     >
-      {/* Treasure Background */}
+      {/* Treasure Background (original) */}
       <TreasureStage />
 
-      {/* Keys & Coins overlay (now absolute to the banner) */}
+      {/* Keys & Coins overlay on top while scrolling */}
       <KeysCoinsOverlay />
 
       {/* Top Center Text */}
