@@ -1,33 +1,35 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { supabaseAdmin } from "@/lib/supabase"
-import { AnalyticsChart } from "./components/analytics-chart"
-import { TopProducts } from "./components/top-products"
-import { DollarSign, Users, TrendingUp, Calendar } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabaseAdmin } from "@/lib/supabase";
+import { AnalyticsChart } from "./components/analytics-chart";
+import { TopProducts } from "./components/top-products";
+import { DollarSign, Users, TrendingUp, Calendar } from "lucide-react";
+
+// ✅ Prevent build-time prerender; always render at request time
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 async function getAnalyticsData() {
   try {
     const [ordersResult, customersResult] = await Promise.all([
       supabaseAdmin.from("orders").select("*").order("created_at", { ascending: false }),
       supabaseAdmin.from("customers").select("*"),
-    ])
+    ]);
 
-    const orders = ordersResult.data || []
-    const customers = customersResult.data || []
+    const orders = ordersResult.data || [];
+    const customers = customersResult.data || [];
 
-    // Calculate analytics
-    const now = new Date()
-    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    const last30DaysOrders = orders.filter((order) => new Date(order.created_at) >= thirtyDaysAgo)
-    const last7DaysOrders = orders.filter((order) => new Date(order.created_at) >= sevenDaysAgo)
+    const last30DaysOrders = orders.filter((o) => new Date(o.created_at) >= thirtyDaysAgo);
+    const last7DaysOrders = orders.filter((o) => new Date(o.created_at) >= sevenDaysAgo);
 
-    const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0)
-    const last30DaysRevenue = last30DaysOrders.reduce((sum, order) => sum + (order.total || 0), 0)
-    const last7DaysRevenue = last7DaysOrders.reduce((sum, order) => sum + (order.total || 0), 0)
+    const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+    const last30DaysRevenue = last30DaysOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+    const last7DaysRevenue = last7DaysOrders.reduce((sum, o) => sum + (o.total || 0), 0);
 
-    // Calculate conversion rate (assuming 100 visitors per order for demo)
-    const conversionRate = orders.length > 0 ? (orders.length / (orders.length * 10)) * 100 : 0
+    const conversionRate = orders.length > 0 ? (orders.length / (orders.length * 10)) * 100 : 0;
 
     return {
       totalRevenue,
@@ -39,9 +41,9 @@ async function getAnalyticsData() {
       avgOrderValue: orders.length > 0 ? totalRevenue / orders.length : 0,
       conversionRate,
       orders,
-    }
+    };
   } catch (error) {
-    console.error("Error fetching analytics data:", error)
+    console.error("Error fetching analytics data:", error);
     return {
       totalRevenue: 0,
       totalCustomers: 0,
@@ -52,12 +54,12 @@ async function getAnalyticsData() {
       avgOrderValue: 0,
       conversionRate: 0,
       orders: [],
-    }
+    };
   }
 }
 
 export default async function AnalyticsPage() {
-  const analytics = await getAnalyticsData()
+  const analytics = await getAnalyticsData();
 
   return (
     <div className="space-y-6">
@@ -136,5 +138,5 @@ export default async function AnalyticsPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

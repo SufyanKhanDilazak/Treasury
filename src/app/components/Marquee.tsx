@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 
 // Utility function
 function cn(...classes: (string | undefined | null | false)[]) {
@@ -77,12 +78,14 @@ const ReviewCard = ({
       }}
     >
       <div className="flex flex-col items-center text-center">
-        <img
+        <Image
           className="rounded-full"
           width={40}
           height={40}
           alt={name}
           src={img}
+          sizes="40px"
+          loading="lazy"
           style={{
             boxShadow: `0 0 0 2px ${GOLD}, 0 2px 6px rgba(0,0,0,0.3)`,
           }}
@@ -148,20 +151,19 @@ export function MarqueeDemo() {
 
       {/* Rows */}
       <div className="mb-6">
-  <Marquee pauseOnHover className="[--duration:20s]">
-    {firstRow.map((review) => (
-      <ReviewCard key={review.username} {...review} />
-    ))}
-  </Marquee>
-</div>
-<div className="mt-6">
-  <Marquee reverse pauseOnHover className="[--duration:20s]">
-    {secondRow.map((review) => (
-      <ReviewCard key={review.username} {...review} />
-    ))}
-  </Marquee>
-</div>
-
+        <Marquee pauseOnHover className="[--duration:20s]">
+          {firstRow.map((review) => (
+            <ReviewCard key={review.username} {...review} />
+          ))}
+        </Marquee>
+      </div>
+      <div className="mt-6">
+        <Marquee reverse pauseOnHover className="[--duration:20s]">
+          {secondRow.map((review) => (
+            <ReviewCard key={review.username} {...review} />
+          ))}
+        </Marquee>
+      </div>
 
       {/* Edge fades */}
       <div className="pointer-events-none absolute inset-y-0 left-0 w-1/6 bg-gradient-to-r from-white"></div>

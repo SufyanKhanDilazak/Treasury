@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
 import NextImage from "next/image";
 import { gsap } from "gsap";
 
@@ -128,22 +128,26 @@ const Masonry: React.FC<MasonryProps> = ({
   const isMobile = (width || 0) < 640;
   const effectiveGap = isMobile ? 8 : gap;
 
-  const getInitialPosition = (item: GridItem) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return { x: item.x, y: item.y };
-    let dir =
-      animateFrom === "random"
-        ? (["top", "bottom", "left", "right"] as const)[Math.floor(Math.random() * 4)]
-        : animateFrom;
-    switch (dir) {
-      case "top": return { x: item.x, y: -200 };
-      case "bottom": return { x: item.x, y: (typeof window !== "undefined" ? window.innerHeight : 800) + 200 };
-      case "left": return { x: -200, y: item.y };
-      case "right": return { x: (typeof window !== "undefined" ? window.innerWidth : 1200) + 200, y: item.y };
-      case "center": return { x: rect.width / 2 - item.w / 2, y: rect.height / 2 - item.h / 2 };
-      default: return { x: item.x, y: item.y + 100 };
-    }
-  };
+  // ✅ memoized; include containerRef to satisfy ESLint deps
+  const getInitialPosition = useCallback(
+    (item: GridItem) => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return { x: item.x, y: item.y };
+      const dir =
+        animateFrom === "random"
+          ? (["top", "bottom", "left", "right"] as const)[Math.floor(Math.random() * 4)]
+          : animateFrom;
+      switch (dir) {
+        case "top": return { x: item.x, y: -200 };
+        case "bottom": return { x: item.x, y: (typeof window !== "undefined" ? window.innerHeight : 800) + 200 };
+        case "left": return { x: -200, y: item.y };
+        case "right": return { x: (typeof window !== "undefined" ? window.innerWidth : 1200) + 200, y: item.y };
+        case "center": return { x: rect.width / 2 - item.w / 2, y: rect.height / 2 - item.h / 2 };
+        default: return { x: item.x, y: item.y + 100 };
+      }
+    },
+    [animateFrom, containerRef]
+  );
 
   // collage rules (unchanged logic)
   const mobileHeightScale = (idx: number) => [1.15, 0.92, 1.05, 0.88][idx % 4];
@@ -203,7 +207,7 @@ const Masonry: React.FC<MasonryProps> = ({
       }
     });
     hasMounted.current = true;
-  }, [grid, imagesReady, stagger, animateFrom, blurToFocus, duration, ease]);
+  }, [grid, imagesReady, stagger, blurToFocus, duration, ease, getInitialPosition]);
 
   const onEnter = (id: string) => {
     if (scaleOnHover) gsap.to(`[data-key="${id}"]`, { scale: hoverScale, duration: 0.18, ease: "power2.out" });
@@ -217,13 +221,10 @@ const Masonry: React.FC<MasonryProps> = ({
   return (
     <div
       className={`w-full ${className ?? ""}`}
-      // subtle black mist behind the section (doesn't change layout)
       style={{
-        background:
-          "radial-gradient(900px 200px at 50% -70px, rgba(0,0,0,0.05), transparent 70%)",
+        background: "radial-gradient(900px 200px at 50% -70px, rgba(0,0,0,0.05), transparent 70%)",
       }}
     >
-      {/* Centered banner (black text, gold accent with black glow) */}
       <header className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-6 text-center">
         <h1
           className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-black"
@@ -233,14 +234,10 @@ const Masonry: React.FC<MasonryProps> = ({
         </h1>
         <div
           className="mx-auto mt-3 h-[3px] w-24 rounded-full"
-          style={{
-            background: GOLD,
-            boxShadow: `0 0 10px ${BLACK}55`,
-          }}
+          style={{ background: GOLD, boxShadow: `0 0 10px ${BLACK}55` }}
         />
       </header>
 
-      {/* Canvas (unchanged layout) */}
       <section
         ref={containerRef}
         className="relative mx-auto max-w-7xl px-2 sm:px-4 lg:px-6"
@@ -259,7 +256,6 @@ const Masonry: React.FC<MasonryProps> = ({
             <figure
               className="relative w-full h-full overflow-hidden rounded-[14px] bg-white"
               style={{
-                // premium borders/shadows: thin black outer + subtle inner gold
                 border: `1.5px solid ${BLACK}`,
                 boxShadow: `0 14px 40px -14px rgba(0,0,0,0.45), inset 0 0 1px ${GOLD}`,
               }}
@@ -273,8 +269,6 @@ const Masonry: React.FC<MasonryProps> = ({
                 priority={item.priority}
                 unoptimized={item.unoptimized}
               />
-
-              {/* subtle gold focus ring on hover (no layout change) */}
               <span
                 className="pointer-events-none absolute inset-0 rounded-[14px] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
                 style={{ boxShadow: `inset 0 0 0 2px ${GOLD}66` }}

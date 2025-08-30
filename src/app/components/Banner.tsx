@@ -166,21 +166,23 @@ function KeysCoinsOverlay() {
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
 
-  // explicit refs to the two system groups (so we don't guess via traverse)
+  // explicit refs to the two system groups
   const keysSystemRef = useRef<THREE.Group | null>(null);
   const coinsSystemRef = useRef<THREE.Group | null>(null);
 
   type ObjCfg = { radius: number; speed: number; angle: number; height: number };
+  type UD = { cfg: ObjCfg; offset: number; speedEff: number };
+  type UDObject3D = THREE.Object3D & { userData: UD };
 
   const keysCfg = useMemo<ObjCfg[]>(
     () => [
-      { radius: 5, speed: 0.30, angle: 0.0, height: 1.0 },
-      { radius: 5, speed: 0.30, angle: Math.PI / 3, height: 0.5 },
-      { radius: 5, speed: 0.30, angle: (2 * Math.PI) / 3, height: 1.5 },
-      { radius: 7, speed: 0.20, angle: 0.0, height: 2.0 },
+      { radius: 5, speed: 0.3, angle: 0.0, height: 1.0 },
+      { radius: 5, speed: 0.3, angle: Math.PI / 3, height: 0.5 },
+      { radius: 5, speed: 0.3, angle: (2 * Math.PI) / 3, height: 1.5 },
+      { radius: 7, speed: 0.2, angle: 0.0, height: 2.0 },
       { radius: 6, speed: 0.25, angle: Math.PI / 6, height: 0.7 },
       { radius: 8, speed: 0.15, angle: Math.PI / 4, height: 2.5 },
-      { radius: 7, speed: 0.20, angle: Math.PI, height: 1.8 },
+      { radius: 7, speed: 0.2, angle: Math.PI, height: 1.8 },
       { radius: 6, speed: 0.25, angle: (7 * Math.PI) / 6, height: 1.0 },
     ],
     []
@@ -188,9 +190,9 @@ function KeysCoinsOverlay() {
 
   const coinsCfg = useMemo<ObjCfg[]>(
     () => [
-      { radius: 4.0, speed: 0.40, angle: 0.2, height: 0.5 },
-      { radius: 6.0, speed: 0.30, angle: 1.5 * Math.PI, height: -0.2 },
-      { radius: 3.5, speed: 0.50, angle: Math.PI / 4, height: 0.8 },
+      { radius: 4.0, speed: 0.4, angle: 0.2, height: 0.5 },
+      { radius: 6.0, speed: 0.3, angle: 1.5 * Math.PI, height: -0.2 },
+      { radius: 3.5, speed: 0.5, angle: Math.PI / 4, height: 0.8 },
       { radius: 5.0, speed: 0.35, angle: 0.6 * Math.PI, height: 1.2 },
       { radius: 5.5, speed: 0.32, angle: 1.1 * Math.PI, height: 0.3 },
       { radius: 4.2, speed: 0.45, angle: 1.8 * Math.PI, height: 0.7 },
@@ -200,78 +202,87 @@ function KeysCoinsOverlay() {
     []
   );
 
-  const makeGoldMat = (emissiveIntensity = 0.15) =>
-    new THREE.MeshStandardMaterial({
-      color: 0xFFD700,
-      metalness: 0.95,
-      roughness: 0.05,
-      emissive: new THREE.Color(0xFFD700),
-      emissiveIntensity,
-    });
+  const makeGoldMat = useCallback(
+    (emissiveIntensity = 0.15) =>
+      new THREE.MeshStandardMaterial({
+        color: 0xffd700,
+        metalness: 0.95,
+        roughness: 0.05,
+        emissive: new THREE.Color(0xffd700),
+        emissiveIntensity,
+      }),
+    []
+  );
 
-  // add a unique phase offset + non-zero speed to each object
-  const withUserData = (g: THREE.Group, cfg: ObjCfg) => {
-    (g as any).userData = {
+  // add a unique phase offset + non-zero speed to each object (typed, no "any")
+  const withUserData = useCallback((g: THREE.Object3D, cfg: ObjCfg) => {
+    (g as unknown as UDObject3D).userData = {
       cfg,
       offset: Math.random() * Math.PI * 2,
       speedEff: Math.max(0.01, cfg.speed),
     };
-  };
+  }, []);
 
-  const createKey = (cfg: ObjCfg) => {
-    const g = new THREE.Group();
-    withUserData(g, cfg);
+  const createKey = useCallback(
+    (cfg: ObjCfg) => {
+      const g = new THREE.Group();
+      withUserData(g, cfg);
 
-    const mat = makeGoldMat(0.15);
-    const head = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.12, 16, 32), mat);
-    head.position.set(0, 0.8, 0);
-    g.add(head);
+      const mat = makeGoldMat(0.15);
+      const head = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.12, 16, 32), mat);
+      head.position.set(0, 0.8, 0);
+      g.add(head);
 
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.6, 16), mat);
-    g.add(shaft);
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.6, 16), mat);
+      g.add(shaft);
 
-    const t1 = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.12, 0.12), mat);
-    t1.position.set(0.15, -0.6, 0);
-    g.add(t1);
+      const t1 = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.12, 0.12), mat);
+      t1.position.set(0.15, -0.6, 0);
+      g.add(t1);
 
-    const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.12), mat);
-    t2.position.set(0.15, -0.8, 0);
-    g.add(t2);
+      const t2 = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.12), mat);
+      t2.position.set(0.15, -0.8, 0);
+      g.add(t2);
 
-    g.scale.setScalar(0.35);
-    return g;
-  };
+      g.scale.setScalar(0.35);
+      return g;
+    },
+    [makeGoldMat, withUserData]
+  );
 
-  const createCoin = (cfg: ObjCfg) => {
-    const g = new THREE.Group();
-    withUserData(g, cfg);
+  const createCoin = useCallback(
+    (cfg: ObjCfg) => {
+      const g = new THREE.Group();
+      withUserData(g, cfg);
 
-    const mat = makeGoldMat(0.10);
-    const mat2 = makeGoldMat(0.15);
+      const mat = makeGoldMat(0.1);
+      const mat2 = makeGoldMat(0.15);
 
-    const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.06, 32), mat);
-    g.add(coin);
+      const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.06, 32), mat);
+      g.add(coin);
 
-    const detailGeom = new THREE.CylinderGeometry(0.22, 0.22, 0.005, 32);
-    [0.033, -0.033].forEach((y) => {
-      const d = new THREE.Mesh(detailGeom, mat2);
-      d.position.y = y;
-      g.add(d);
-    });
+      const detailGeom = new THREE.CylinderGeometry(0.22, 0.22, 0.005, 32);
+      [0.033, -0.033].forEach((y) => {
+        const d = new THREE.Mesh(detailGeom, mat2);
+        d.position.y = y;
+        g.add(d);
+      });
 
-    const centerGeom = new THREE.CylinderGeometry(0.15, 0.15, 0.002, 24);
-    [0.036, -0.036].forEach((y) => {
-      const c = new THREE.Mesh(centerGeom, mat2);
-      c.position.y = y;
-      g.add(c);
-    });
+      const centerGeom = new THREE.CylinderGeometry(0.15, 0.15, 0.002, 24);
+      [0.036, -0.036].forEach((y) => {
+        const c = new THREE.Mesh(centerGeom, mat2);
+        c.position.y = y;
+        g.add(c);
+      });
 
-    const edge = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.02, 8, 32), mat2);
-    edge.rotation.x = Math.PI / 2;
-    g.add(edge);
+      const edge = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.02, 8, 32), mat2);
+      edge.rotation.x = Math.PI / 2;
+      g.add(edge);
 
-    return g;
-  };
+      return g;
+    },
+    [makeGoldMat, withUserData]
+  );
 
   const setup = useCallback(() => {
     if (!canvasRef.current) return;
@@ -318,7 +329,7 @@ function KeysCoinsOverlay() {
     cameraRef.current = camera;
     rendererRef.current = renderer;
     startRef.current = null;
-  }, [keysCfg, coinsCfg]);
+  }, [keysCfg, coinsCfg, createKey, createCoin]);
 
   const animate = useCallback((now: number) => {
     if (!sceneRef.current || !rendererRef.current || !cameraRef.current) return;
@@ -330,7 +341,7 @@ function KeysCoinsOverlay() {
 
     if (keysGroup) {
       keysGroup.children.forEach((obj, i) => {
-        const ud = (obj as any).userData as { cfg: ObjCfg; offset: number; speedEff: number } | undefined;
+        const ud = (obj as unknown as UDObject3D).userData as UD | undefined;
         if (!ud) return;
         const { cfg, offset, speedEff } = ud;
         const tt = t * speedEff + cfg.angle + offset;
@@ -345,7 +356,7 @@ function KeysCoinsOverlay() {
 
     if (coinsGroup) {
       coinsGroup.children.forEach((obj, i) => {
-        const ud = (obj as any).userData as { cfg: ObjCfg; offset: number; speedEff: number } | undefined;
+        const ud = (obj as unknown as UDObject3D).userData as UD | undefined;
         if (!ud) return;
         const { cfg, offset, speedEff } = ud;
         const tt = t * speedEff + cfg.angle + offset;
