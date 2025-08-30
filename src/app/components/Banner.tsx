@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback, useMemo } from "react";
 import * as THREE from "three";
 
 /* =========================
-   ORIGINAL TreasureStage (unchanged)
+   TreasureStage (element-sized + observer)
    ========================= */
 function TreasureStage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -15,7 +15,7 @@ function TreasureStage() {
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
 
-  const getScaleAndPosition = useCallback((w: number, _h: number) => {
+  const getScaleAndPosition = useCallback((w: number) => {
     const isMobile = w < 768;
     const scale = isMobile ? 0.22 : 0.28;
     const y = isMobile ? -1.2 : -2.6;
@@ -25,9 +25,8 @@ function TreasureStage() {
   const setup = useCallback(async () => {
     if (!canvasRef.current) return null;
 
-    const el = canvasRef.current.parentElement!;
-    const width = el.clientWidth;
-    const height = el.clientHeight;
+    const host = canvasRef.current.parentElement!;
+    const { width, height } = host.getBoundingClientRect();
 
     const scene = new THREE.Scene();
 
@@ -42,8 +41,9 @@ function TreasureStage() {
       powerPreference: "high-performance",
     });
 
+    // cap DPR; set once during setup to avoid density "jumps"
     const dprCap = width < 480 ? 1.25 : width < 768 ? 1.5 : 2;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, dprCap));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     renderer.setSize(width, height, false);
     renderer.setClearColor(0x000000, 0);
 
@@ -74,7 +74,7 @@ function TreasureStage() {
               m.envMapIntensity = 1.2;
             }
           });
-          const { scale, y } = getScaleAndPosition(width, height);
+          const { scale, y } = getScaleAndPosition(width);
           chest.scale.setScalar(scale);
           chest.position.set(0, y, 0);
           scene.add(chest);
@@ -107,19 +107,18 @@ function TreasureStage() {
     rafRef.current = requestAnimationFrame(animate);
   }, []);
 
-  const onResize = useCallback(() => {
+  const resizeToHost = useCallback(() => {
     if (!rendererRef.current || !cameraRef.current || !chestRef.current || !canvasRef.current)
       return;
 
-    const el = canvasRef.current.parentElement!;
-    const w = el.clientWidth;
-    const h = el.clientHeight;
+    const host = canvasRef.current.parentElement!;
+    const { width, height } = host.getBoundingClientRect();
 
-    rendererRef.current.setSize(w, h, false);
-    cameraRef.current.aspect = w / h;
+    rendererRef.current.setSize(width, height, false);
+    cameraRef.current.aspect = width / height;
     cameraRef.current.updateProjectionMatrix();
 
-    const { scale, y } = getScaleAndPosition(w, h);
+    const { scale, y } = getScaleAndPosition(width);
     chestRef.current.scale.setScalar(scale);
     chestRef.current.position.set(0, y, 0);
   }, [getScaleAndPosition]);
@@ -132,12 +131,20 @@ function TreasureStage() {
       if (data) rafRef.current = requestAnimationFrame(animate);
     })();
 
-    const handle = () => onResize();
-    window.addEventListener("resize", handle, { passive: true });
+    // Observe the section size instead of window.innerHeight
+    let ro: ResizeObserver | null = null;
+    if (canvasRef.current?.parentElement) {
+      ro = new ResizeObserver(() => {
+        // schedule via rAF for smoother updates
+        requestAnimationFrame(resizeToHost);
+      });
+      ro.observe(canvasRef.current.parentElement);
+    }
+
     return () => {
       mounted = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("resize", handle);
+      ro?.disconnect();
       sceneRef.current?.traverse((obj) => {
         const mesh = obj as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
@@ -146,7 +153,7 @@ function TreasureStage() {
       });
       rendererRef.current?.dispose();
     };
-  }, [setup, animate, onResize]);
+  }, [setup, animate, resizeToHost]);
 
   return (
     <div className="pointer-events-none absolute inset-0 z-0">
@@ -156,9 +163,10 @@ function TreasureStage() {
 }
 
 /* =========================
-   FIXED Keys & Coins Overlay
+   Keys & Coins Overlay (absolute + element-sized)
    ========================= */
 function KeysCoinsOverlay() {
+  const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -166,7 +174,6 @@ function KeysCoinsOverlay() {
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
 
-  // explicit refs to the two system groups
   const keysSystemRef = useRef<THREE.Group | null>(null);
   const coinsSystemRef = useRef<THREE.Group | null>(null);
 
@@ -214,7 +221,6 @@ function KeysCoinsOverlay() {
     []
   );
 
-  // add a unique phase offset + non-zero speed to each object (typed, no "any")
   const withUserData = useCallback((g: THREE.Object3D, cfg: ObjCfg) => {
     (g as unknown as UDObject3D).userData = {
       cfg,
@@ -285,10 +291,9 @@ function KeysCoinsOverlay() {
   );
 
   const setup = useCallback(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !hostRef.current) return;
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const { width, height } = hostRef.current.getBoundingClientRect();
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
@@ -303,23 +308,20 @@ function KeysCoinsOverlay() {
     });
 
     const dprCap = width < 480 ? 1.25 : width < 768 ? 1.5 : 2;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, dprCap));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
     renderer.setSize(width, height, false);
     renderer.setClearColor(0x000000, 0);
 
-    // minimal lighting
     scene.add(new THREE.AmbientLight(0xffffff, 0.85));
     const dir = new THREE.DirectionalLight(0xffffff, 0.9);
     dir.position.set(6, 10, 8);
     scene.add(dir);
 
-    // Keys system (save ref)
     const keysSystem = new THREE.Group();
     keysCfg.forEach((cfg) => keysSystem.add(createKey(cfg)));
     scene.add(keysSystem);
     keysSystemRef.current = keysSystem;
 
-    // Coins system (save ref)
     const coinsSystem = new THREE.Group();
     coinsCfg.forEach((cfg) => coinsSystem.add(createCoin(cfg)));
     scene.add(coinsSystem);
@@ -373,12 +375,11 @@ function KeysCoinsOverlay() {
     rafRef.current = requestAnimationFrame(animate);
   }, []);
 
-  const onResize = useCallback(() => {
-    if (!rendererRef.current || !cameraRef.current) return;
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    rendererRef.current.setSize(w, h, false);
-    cameraRef.current.aspect = w / h;
+  const resizeToHost = useCallback(() => {
+    if (!rendererRef.current || !cameraRef.current || !hostRef.current) return;
+    const { width, height } = hostRef.current.getBoundingClientRect();
+    rendererRef.current.setSize(width, height, false);
+    cameraRef.current.aspect = width / height;
     cameraRef.current.updateProjectionMatrix();
   }, []);
 
@@ -386,11 +387,15 @@ function KeysCoinsOverlay() {
     setup();
     rafRef.current = requestAnimationFrame(animate);
 
-    window.addEventListener("resize", onResize, { passive: true });
+    // Observe host size (no window.innerHeight dependence)
+    const ro = new ResizeObserver(() => {
+      requestAnimationFrame(resizeToHost);
+    });
+    if (hostRef.current) ro.observe(hostRef.current);
+
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("resize", onResize);
-      // dispose
+      ro.disconnect();
       sceneRef.current?.traverse((obj) => {
         const mesh = obj as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
@@ -399,10 +404,10 @@ function KeysCoinsOverlay() {
       });
       rendererRef.current?.dispose();
     };
-  }, [setup, animate, onResize]);
+  }, [setup, animate, resizeToHost]);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[9999]">
+    <div ref={hostRef} className="pointer-events-none absolute inset-0 z-[1]">
       <canvas ref={canvasRef} className="w-full h-full pointer-events-none select-none" />
     </div>
   );
@@ -423,10 +428,10 @@ export default function HomePage() {
         max-w-full
       "
     >
-      {/* Treasure Background (original) */}
+      {/* Treasure Background */}
       <TreasureStage />
 
-      {/* Keys & Coins overlay on top while scrolling */}
+      {/* Keys & Coins overlay (now absolute to the banner) */}
       <KeysCoinsOverlay />
 
       {/* Top Center Text */}
