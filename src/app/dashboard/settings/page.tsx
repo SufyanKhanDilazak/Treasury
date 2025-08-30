@@ -25,7 +25,7 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="store-name">Store Name</Label>
-              <Input id="store-name" defaultValue="Scent Studio" />
+              <Input id="store-name" defaultValue="Treasury" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="store-description">Store Description</Label>

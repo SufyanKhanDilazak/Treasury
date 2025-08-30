@@ -12,12 +12,64 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+const SITE_TITLE = 'Treasury — Premium Bags, Perfumes & Footwear';
+const SITE_DESC =
+  'Shop premium bags, perfumes, and footwear at Treasury. Discover clutch, tote, shoulder, crossbody & top-handle bags; unisex perfumes & kits; heels & flats. Fast shipping & easy returns.';
+
 export const metadata: Metadata = {
+  // Set this to your production URL if you have it:
+  // e.g. NEXT_PUBLIC_SITE_URL=https://treasury.yourdomain.com
+  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+    : undefined,
   title: {
-    default: 'Scent Studio - Premium Fragrances & Perfumes',
-    template: '%s | Scent Studio',
+    default: SITE_TITLE,
+    template: '%s | Treasury',
   },
-  description: 'Discover exclusive fragrances and premium perfumes at Scent Studio.',
+  description: SITE_DESC,
+  applicationName: 'Treasury',
+  keywords: [
+    'Treasury',
+    'bags',
+    'handbags',
+    'clutch',
+    'tote bags',
+    'shoulder bags',
+    'crossbody bags',
+    'top handle bags',
+    'perfumes',
+    'unisex perfumes',
+    'perfume kits',
+    'footwear',
+    'heels',
+    'flats',
+    'premium store',
+    'luxury accessories',
+    'fashion',
+    'ecommerce',
+  ],
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESC,
+    url: '/',
+    siteName: 'Treasury',
+    type: 'website',
+    images: [
+      {
+        url: '/logo.png', // replace with a dedicated OG image if you have one
+        width: 512,
+        height: 512,
+        alt: 'Treasury',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_TITLE,
+    description: SITE_DESC,
+    images: ['/logo.png'],
+  },
+  themeColor: '#D4AF37',
 };
 
 export const viewport: Viewport = {
@@ -38,7 +90,6 @@ export default function RootLayout({
             <div className="min-h-screen flex flex-col">
               <Header />
               <main className="flex-1">{children}</main>
-        
             </div>
           </CartProvider>
         </ClerkProvider>

@@ -60,7 +60,7 @@ function SidebarContent() {
     <>
       <SidebarHeader>
         <div className="px-4 py-2">
-          <h2 className="text-lg font-semibold">Scent Studio</h2>
+          <h2 className="text-lg font-semibold">Treasury</h2>
           <p className="text-sm text-muted-foreground">Admin Dashboard</p>
         </div>
       </SidebarHeader>
@@ -84,7 +84,7 @@ function SidebarContent() {
         </SidebarGroup>
       </BaseSidebarContent>
       <SidebarFooter>
-        <div className="px-4 py-2 text-xs text-muted-foreground">© 2025 Scent Studio</div>
+        <div className="px-4 py-2 text-xs text-muted-foreground">© 2025 Treasury</div>
       </SidebarFooter>
     </>
   )

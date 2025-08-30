@@ -62,7 +62,7 @@ export function DashboardHeader() {
               <SheetHeader className="p-6 pb-4">
                 <SheetTitle className="text-left">
                   <div>
-                    <h2 className="text-lg font-semibold">Scent Studio</h2>
+                    <h2 className="text-lg font-semibold">Treasury</h2>
                     <p className="text-sm text-muted-foreground">Admin Dashboard</p>
                   </div>
                 </SheetTitle>
@@ -92,7 +92,7 @@ export function DashboardHeader() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
             <Link href="/dashboard" className="flex items-center gap-2 mr-6">
-              <h1 className="text-lg font-semibold">Scent Studio Dashboard</h1>
+              <h1 className="text-lg font-semibold">Treasury Dashboard</h1>
             </Link>
             {navigation.map((item) => {
               const isActive = pathname === item.href
