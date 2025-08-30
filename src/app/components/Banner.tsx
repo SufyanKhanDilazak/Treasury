@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback, useMemo } from "react";
 import * as THREE from "three";
 
 /* =========================
-   ORIGINAL TreasureStage (unchanged)
+   ORIGINAL TreasureStage (kept same visuals/logic)
    ========================= */
 function TreasureStage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,6 +14,7 @@ function TreasureStage() {
   const chestRef = useRef<THREE.Group | null>(null);
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
+  const prevSizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
 
   const getScaleAndPosition = useCallback((w: number, _h: number) => {
     const isMobile = w < 768;
@@ -28,6 +29,7 @@ function TreasureStage() {
     const el = canvasRef.current.parentElement!;
     const width = el.clientWidth;
     const height = el.clientHeight;
+    prevSizeRef.current = { w: width, h: height };
 
     const scene = new THREE.Scene();
 
@@ -107,14 +109,22 @@ function TreasureStage() {
     rafRef.current = requestAnimationFrame(animate);
   }, []);
 
+  // Ignore tiny mobile UI-driven resizes (URL bar show/hide)
   const onResize = useCallback(() => {
     if (!rendererRef.current || !cameraRef.current || !chestRef.current || !canvasRef.current)
       return;
-
     const el = canvasRef.current.parentElement!;
     const w = el.clientWidth;
     const h = el.clientHeight;
 
+    const prev = prevSizeRef.current;
+    const deltaW = Math.abs(w - prev.w);
+    const deltaH = Math.abs(h - prev.h);
+
+    // Only re-layout if orientation or significant change (>80px) or width changes
+    if (deltaW === 0 && deltaH < 80) return;
+
+    prevSizeRef.current = { w, h };
     rendererRef.current.setSize(w, h, false);
     cameraRef.current.aspect = w / h;
     cameraRef.current.updateProjectionMatrix();
@@ -134,10 +144,14 @@ function TreasureStage() {
 
     const handle = () => onResize();
     window.addEventListener("resize", handle, { passive: true });
+    // Also listen to orientation changes explicitly
+    window.addEventListener("orientationchange", handle, { passive: true });
+
     return () => {
       mounted = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", handle);
+      window.removeEventListener("orientationchange", handle);
       sceneRef.current?.traverse((obj) => {
         const mesh = obj as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
@@ -150,13 +164,16 @@ function TreasureStage() {
 
   return (
     <div className="pointer-events-none absolute inset-0 z-0">
-      <canvas ref={canvasRef} className="w-full h-full pointer-events-none select-none" />
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full pointer-events-none select-none [transform:translateZ(0)]"
+      />
     </div>
   );
 }
 
 /* =========================
-   Keys & Coins Overlay (fixed + original z-index, jitter-guard)
+   FIXED Keys & Coins Overlay (same visuals; smarter resize)
    ========================= */
 function KeysCoinsOverlay() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -165,20 +182,15 @@ function KeysCoinsOverlay() {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
+  const prevSizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
 
+  // explicit refs to the two system groups
   const keysSystemRef = useRef<THREE.Group | null>(null);
   const coinsSystemRef = useRef<THREE.Group | null>(null);
 
-  // Stable viewport state (prevents mobile URL-bar "zoom")
-  const stableW = useRef(0);
-  const stableH = useRef(0);
-  const lastAppliedW = useRef(0);
-  const lastAppliedH = useRef(0);
-  const runningRef = useRef(true);
-
   type ObjCfg = { radius: number; speed: number; angle: number; height: number };
-  type UD   = { cfg: ObjCfg; offset: number; speedEff: number };
-  type UDObj = THREE.Object3D & { userData: UD };
+  type UD = { cfg: ObjCfg; offset: number; speedEff: number };
+  type UDObject3D = THREE.Object3D & { userData: UD };
 
   const keysCfg = useMemo<ObjCfg[]>(
     () => [
@@ -221,7 +233,7 @@ function KeysCoinsOverlay() {
   );
 
   const withUserData = useCallback((g: THREE.Object3D, cfg: ObjCfg) => {
-    (g as unknown as UDObj).userData = {
+    (g as unknown as UDObject3D).userData = {
       cfg,
       offset: Math.random() * Math.PI * 2,
       speedEff: Math.max(0.01, cfg.speed),
@@ -289,61 +301,15 @@ function KeysCoinsOverlay() {
     [makeGoldMat, withUserData]
   );
 
-  // Helper to get current viewport size (prefers visualViewport when available)
-  const getViewport = useCallback(() => {
-    const vv = window.visualViewport;
-    return {
-      w: vv?.width ? Math.round(vv.width) : window.innerWidth,
-      h: vv?.height ? Math.round(vv.height) : window.innerHeight,
-    };
-  }, []);
-
-  // Re-size only on meaningful changes (ignore URL-bar jitter)
-  const resizeIfNeeded = useCallback((force = false) => {
-    if (!rendererRef.current || !cameraRef.current || !canvasRef.current) return;
-
-    const { w, h } = getViewport();
-
-    // Decide if this is a "real" resize
-    const widthDelta = Math.abs(w - stableW.current);
-    const heightDelta = Math.abs(h - stableH.current);
-
-    const isOrientationFlip = (w > h && stableW.current < stableH.current) || (w < h && stableW.current > stableH.current);
-    const bigWidthChange = widthDelta > 12;       // real width change (e.g., rotation / split view)
-    const bigHeightChange = heightDelta > 120;    // real height change (not URL bar jiggle)
-
-    if (!force && !isOrientationFlip && !bigWidthChange && !bigHeightChange) {
-      return; // ignore tiny toolbar-driven changes
-    }
-
-    stableW.current = w;
-    stableH.current = h;
-
-    // Also avoid redundant setSize calls
-    if (!force && Math.abs(w - lastAppliedW.current) <= 3 && Math.abs(h - lastAppliedH.current) <= 3) {
-      return;
-    }
-    lastAppliedW.current = w;
-    lastAppliedH.current = h;
-
-    const dprCap = w < 480 ? 1.25 : w < 768 ? 1.5 : 2;
-    rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, dprCap));
-    rendererRef.current.setSize(w, h, false);
-    cameraRef.current.aspect = w / h;
-    cameraRef.current.updateProjectionMatrix();
-  }, [getViewport]);
-
   const setup = useCallback(() => {
     if (!canvasRef.current) return;
 
-    const { w, h } = getViewport();
-    stableW.current = w;
-    stableH.current = h;
-    lastAppliedW.current = w;
-    lastAppliedH.current = h;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    prevSizeRef.current = { w: width, h: height };
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
     camera.position.set(0, 2, 13);
     camera.lookAt(0, -1, 0);
 
@@ -352,24 +318,26 @@ function KeysCoinsOverlay() {
       alpha: true,
       antialias: true,
       powerPreference: "high-performance",
-      preserveDrawingBuffer: false,
     });
 
-    const dprCap = w < 480 ? 1.25 : w < 768 ? 1.5 : 2;
+    const dprCap = width < 480 ? 1.25 : width < 768 ? 1.5 : 2;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, dprCap));
-    renderer.setSize(w, h, false);
+    renderer.setSize(width, height, false);
     renderer.setClearColor(0x000000, 0);
 
+    // minimal lighting
     scene.add(new THREE.AmbientLight(0xffffff, 0.85));
     const dir = new THREE.DirectionalLight(0xffffff, 0.9);
     dir.position.set(6, 10, 8);
     scene.add(dir);
 
+    // Keys system
     const keysSystem = new THREE.Group();
     keysCfg.forEach((cfg) => keysSystem.add(createKey(cfg)));
     scene.add(keysSystem);
     keysSystemRef.current = keysSystem;
 
+    // Coins system
     const coinsSystem = new THREE.Group();
     coinsCfg.forEach((cfg) => coinsSystem.add(createCoin(cfg)));
     scene.add(coinsSystem);
@@ -379,13 +347,9 @@ function KeysCoinsOverlay() {
     cameraRef.current = camera;
     rendererRef.current = renderer;
     startRef.current = null;
-  }, [getViewport, keysCfg, coinsCfg, createKey, createCoin]);
+  }, [keysCfg, coinsCfg, createKey, createCoin]);
 
   const animate = useCallback((now: number) => {
-    if (!runningRef.current) {
-      rafRef.current = requestAnimationFrame(animate);
-      return;
-    }
     if (!sceneRef.current || !rendererRef.current || !cameraRef.current) return;
     if (startRef.current == null) startRef.current = now;
     const t = (now - startRef.current) / 1000;
@@ -395,7 +359,7 @@ function KeysCoinsOverlay() {
 
     if (keysGroup) {
       keysGroup.children.forEach((obj, i) => {
-        const ud = (obj as unknown as UDObj).userData as UD | undefined;
+        const ud = (obj as unknown as UDObject3D).userData as UD | undefined;
         if (!ud) return;
         const { cfg, offset, speedEff } = ud;
         const tt = t * speedEff + cfg.angle + offset;
@@ -410,7 +374,7 @@ function KeysCoinsOverlay() {
 
     if (coinsGroup) {
       coinsGroup.children.forEach((obj, i) => {
-        const ud = (obj as unknown as UDObj).userData as UD | undefined;
+        const ud = (obj as unknown as UDObject3D).userData as UD | undefined;
         if (!ud) return;
         const { cfg, offset, speedEff } = ud;
         const tt = t * speedEff + cfg.angle + offset;
@@ -427,34 +391,39 @@ function KeysCoinsOverlay() {
     rafRef.current = requestAnimationFrame(animate);
   }, []);
 
-  useEffect(() => {
-    const onResize = () => resizeIfNeeded(false);
-    const onOrient = () => resizeIfNeeded(true);
-    const onVis = () => (runningRef.current = !document.hidden);
+  // Ignore tiny mobile UI-driven resizes; respond to real changes
+  const onResize = useCallback(() => {
+    if (!rendererRef.current || !cameraRef.current) return;
 
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    const prev = prevSizeRef.current;
+    const deltaW = Math.abs(w - prev.w);
+    const deltaH = Math.abs(h - prev.h);
+
+    // Only react on significant change or width changes
+    if (deltaW === 0 && deltaH < 80) return;
+
+    prevSizeRef.current = { w, h };
+    rendererRef.current.setSize(w, h, false);
+    cameraRef.current.aspect = w / h;
+    cameraRef.current.updateProjectionMatrix();
+  }, []);
+
+  useEffect(() => {
     setup();
     rafRef.current = requestAnimationFrame(animate);
 
-    // Prefer visualViewport when present (iOS/Android modern browsers)
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", onResize, { passive: true });
-    } else {
-      window.addEventListener("resize", onResize, { passive: true });
-    }
-    window.addEventListener("orientationchange", onOrient, { passive: true });
-    document.addEventListener("visibilitychange", onVis, { passive: true });
+    const handle = () => onResize();
+    window.addEventListener("resize", handle, { passive: true });
+    window.addEventListener("orientationchange", handle, { passive: true });
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener("resize", onResize as EventListener);
-      } else {
-        window.removeEventListener("resize", onResize);
-      }
-      window.removeEventListener("orientationchange", onOrient);
-      document.removeEventListener("visibilitychange", onVis);
-
+      window.removeEventListener("resize", handle);
+      window.removeEventListener("orientationchange", handle);
+      // dispose
       sceneRef.current?.traverse((obj) => {
         const mesh = obj as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
@@ -463,25 +432,27 @@ function KeysCoinsOverlay() {
       });
       rendererRef.current?.dispose();
     };
-  }, [setup, animate, resizeIfNeeded]);
+  }, [setup, animate, onResize]);
 
-  // IMPORTANT: keep original fixed overlay & z-index EXACTLY as before
   return (
     <div className="pointer-events-none fixed inset-0 z-[9999]">
-      <canvas ref={canvasRef} className="w-full h-full pointer-events-none select-none" />
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full pointer-events-none select-none [transform:translateZ(0)]"
+      />
     </div>
   );
 }
 
 /* =========================
-   PAGE (unchanged layout & styling)
+   PAGE (same visuals; stable height via svh)
    ========================= */
 export default function HomePage() {
   return (
     <div
       className="
         relative
-        h-[55dvh] sm:h-[65dvh] md:h-[70dvh] lg:h-[60dvh]
+        h-[55svh] sm:h-[65svh] md:h-[70svh] lg:h-[60svh]
         bg-[#98afc7] text-black overflow-hidden
         overscroll-y-contain
         [touch-action:pan-y]
@@ -491,7 +462,7 @@ export default function HomePage() {
       {/* Treasure Background (original) */}
       <TreasureStage />
 
-      {/* Keys & Coins overlay (fixed + z-[9999], now stable) */}
+      {/* Keys & Coins overlay on top while scrolling */}
       <KeysCoinsOverlay />
 
       {/* Top Center Text */}
